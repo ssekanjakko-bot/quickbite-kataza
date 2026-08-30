@@ -3,70 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickBite Kataza - Rice, Fries, Rolex, Juice, Soda</title>
+<title>Quick Bite Kataza</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--bg:#1A1A1A;--card:#2A2A2A;--card2:#333;--text:#fff;--muted:#9CA3AF;--orange:#FF6B00}
+.light{--bg:#FFF7ED;--card:#fff;--card2:#F3F4F6;--text:#111;--muted:#6B7280}
+body{background:var(--bg);color:var(--text);transition:0.3s}
+.card{background:var(--card)}
+.card2{background:var(--card2)}
+.text-mute{color:var(--muted)}
+.orange{color:var(--orange)}
+.bg-orange{background:var(--orange)}
+</style>
 </head>
-<body class="bg-[#FFF7ED]">
-<div class="max-w-[430px] mx-auto bg-white min-h-screen shadow-xl pb-20">
+<body class="">
+<div class="max-w-[430px] mx-auto min-h-screen pb-24" style="background:var(--bg)">
 
 <!-- HEADER -->
-<div class="bg-[#EA580C] text-white p-4 sticky top-0 z-20">
-<h1 class="font-black text-[22px] tracking-tight">QuickBite • Kataza</h1>
-<p class="text-[11px] mt-1 bg-white/20 p-2 rounded-lg">📍 Kataza, Kampala • 25-35 min delivery • Pay on Delivery</p>
+<div class="p-5 flex justify-between items-center">
+<div class="flex items-center gap-2 text-[11px]">🇺🇬 <b>Quick Bite Kataza</b></div>
+<button onclick="toggleTheme()" id="themeBtn" class="text-[11px] border px-3 py-1 rounded-full">🌙 Night Mode</button>
 </div>
 
-<!-- SEARCH -->
-<div class="p-4">
-<h2 class="font-bold text-[18px]">What are you craving today?</h2>
-<input id="search" oninput="render()" placeholder="Search rice, chips, rolex, juice, soda..." class="w-full mt-3 p-3.5 bg-gray-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500">
-<div class="flex gap-2 mt-3 overflow-x-auto">
-<button onclick="filterCat('All')" class="catBtn bg-[#EA580C] text-white px-4 py-1.5 rounded-full text-xs font-bold">All</button>
-<button onclick="filterCat('Rice')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Rice</button>
-<button onclick="filterCat('Chips')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Chips</button>
-<button onclick="filterCat('Rolex')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Rolex</button>
-<button onclick="filterCat('Soda')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Soda</button>
+<div class="px-5">
+<h1 class="text-[#FF6B00] font-black text-[30px]">QUICK BITE</h1>
+<p class="text-[11px] text-mute -mt-1">📍 Kataza, Uganda • Night Delivery</p>
+
+<div class="relative mt-4">
+<input id="search" oninput="renderMenu()" placeholder="Search rice, rolex, juice, soda..." class="w-full card rounded-full py-3 px-5 text-[12px] outline-none border border-[#333]">
+</div>
+
+<div class="card border border-[#3A2A1A] rounded-2xl p-4 mt-4">
+<p class="font-black text-sm">STREET FOOD • NOW OPEN</p>
+<p class="text-[11px] orange">Fast • Fresh • Affordable</p>
 </div>
 </div>
 
-<!-- MENU -->
-<div id="menu" class="grid grid-cols-2 gap-3 p-4"></div>
+<div id="homeScreen" class="px-5 mt-5">
+<p class="font-bold text-sm mb-3">Popular Near You</p>
+<div id="popular" class="grid grid-cols-3 gap-2"></div>
+<div class="mt-6">
+<div class="flex gap-2 mb-3 overflow-x-auto" id="cats"></div>
+<div id="menuList"></div>
+</div>
+</div>
 
-<!-- CART PAGE -->
-<div id="cartPage" class="p-4 hidden"></div>
+<div id="cartScreen" class="hidden px-5 mt-2">
+<div class="flex items-center gap-3 mb-4"><button onclick="showHome()" class="text-xl">‹</button><h2 class="font-black text-lg mx-auto">Your Cart</h2></div>
+<div id="cartItems" class="space-y-3"></div>
+<div id="cartSummary" class="card rounded-2xl p-4 mt-4 space-y-2 text-[12px]"></div>
+<a id="checkoutBtn" href="#" target="_blank" class="block mt-4 bg-orange text-black text-center py-4 rounded-full font-black">Checkout • Pay UGX 0</a>
+<p class="text-[10px] text-mute text-center mt-2">✓ Cash on Delivery • Mobile Money Accepted</p>
+</div>
 
-<!-- BOTTOM NAV -->
-<div class="fixed bottom-0 w-full max-w-[430px] bg-white border-t flex justify-around py-3.5 z-10">
-<button onclick="showHome()" class="font-black text-[#EA580C] flex flex-col items-center text-xs"><span class="text-xl">🏠</span>Home</button>
-<button onclick="showCart()" class="font-bold flex flex-col items-center text-xs relative"><span class="text-xl">🛒</span>Cart <span id="count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] px-1.5 rounded-full">0</span></button>
-<button onclick="window.open('https://wa.me/256700000000','_blank')" class="font-bold flex flex-col items-center text-xs"><span class="text-xl">💬</span>WhatsApp</button>
+<!-- NAV -->
+<div class="fixed bottom-0 w-full max-w-[430px] card border-t flex justify-around py-3 z-20" style="border-color:#2A2A2A">
+<button onclick="showHome()" class="flex flex-col items-center orange"><span>⌂</span><span class="text-[9px]">Home</span></button>
+<button onclick="showCart()" class="flex flex-col items-center text-mute relative"><span>🛒</span><span id="cartCount" class="absolute -top-1 -right-1 bg-orange text-black text-[8px] px-1 rounded-full">0</span><span class="text-[9px]">Cart</span></button>
+<button onclick="toggleTheme()" class="flex flex-col items-center text-mute"><span>🌙</span><span class="text-[9px]">Theme</span></button>
+</div>
+
+<div id="floatingCart" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] card border rounded-full p-2 flex justify-between items-center z-30">
+<span id="floatText" class="text-[11px] font-bold px-3">0 items</span>
+<button onclick="showCart()" class="bg-orange text-black text-[11px] font-black px-4 py-2 rounded-full">View Cart →</button>
 </div>
 
 </div>
-
 <script>
-let currentCat='All';
+let isDark=true;
+function toggleTheme(){isDark=!isDark;document.documentElement.className=isDark?'':'light';document.body.className=isDark?'':'light';document.getElementById("themeBtn").innerText=isDark?'🌙 Night Mode':'☀️ Light Mode';}
 const foods=[
-{id:1,n:"Rice & Beans",p:5000,i:"🍛",cat:"Rice",d:"Steamed rice + beans"},
-{id:2,n:"Rice & Meat",p:12000,i:"🍛",cat:"Rice",d:"Pilau + beef stew"},
-{id:3,n:"Chips / Fries",p:4000,i:"🍟",cat:"Chips",d:"Crispy golden chips"},
-{id:4,n:"Chips Masala",p:6000,i:"🍟",cat:"Chips",d:"Chips + masala + salsa"},
-{id:5,n:"Rolex Chapati",p:3500,i:"🌯",cat:"Rolex",d:"Egg + chapati + veggies"},
-{id:6,n:"Rolex Special",p:5000,i:"🌯",cat:"Rolex",d:"2 eggs + avocado + cheese"},
-{id:7,n:"Full Plate",p:15000,i:"🍱",cat:"Rice",d:"Rice + chips + meat + soda"},
-{id:8,n:"Mango Juice",p:3000,i:"🧃",cat:"Soda",d:"Fresh mango 500ml"},
-{id:9,n:"Passion Juice",p:3000,i:"🧃",cat:"Soda",d:"Fresh passion 500ml"},
-{id:10,n:"Soda Coke",p:2000,i:"🥤",cat:"Soda",d:"Coke 500ml cold"},
-{id:11,n:"Fanta / Sprite",p:2000,i:"🥤",cat:"Soda",d:"500ml cold"},
+{id:1,n:"Rolex Special",p:5000,cat:"Rolex",d:"Chapati + egg, onions, cabbage & chili",i:"🌯"},
+{id:2,n:"Rice with Beans & Beef",p:8000,cat:"Rice",d:"Classic beans, beef stew, onions",i:"🍛"},
+{id:3,n:"Crispy Chips Masala",p:4500,cat:"Chips",d:"Spiced chips with kachumbari salsa",i:"🍟"},
+{id:4,n:"Fresh Mango Juice",p:3000,cat:"Juice",d:"Cold pressed mango 500ml",i:"🧃"},
+{id:5,n:"Soda Coke 500ml",p:2500,cat:"Soda",d:"Ice cold classic",i:"🥤"},
+{id:6,n:"Full Plate",p:12000,cat:"Rice",d:"Rice + chips + meat + soda",i:"🍱"},
 ];
-let cart=[];
-function filterCat(c){currentCat=c;document.querySelectorAll('.catBtn').forEach(b=>{b.className='catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold'; if(b.innerText==c) b.className='catBtn bg-[#EA580C] text-white px-4 py-1.5 rounded-full text-xs font-bold'});render();}
-function render(){let q=document.getElementById("search").value.toLowerCase();let list=foods.filter(x=>(currentCat=='All'||x.cat==currentCat)&&x.n.toLowerCase().includes(q));document.getElementById("menu").innerHTML=list.map(x=>`<div onclick="add(${x.id})" class="border-2 border-orange-50 rounded-2xl p-4 text-center active:border-[#EA580C] active:bg-orange-50"><div class="text-5xl">${x.i}</div><p class="font-black text-[13px] mt-2 leading-tight">${x.n}</p><p class="text-gray-400 text-[10px]">${x.d}</p><p class="text-[#EA580C] font-black text-[13px] mt-1">${x.p.toLocaleString()} UGX</p><button class="mt-2 w-full bg-black text-white text-[11px] py-1.5 rounded-full font-bold">+ ADD</button></div>`).join("")}
-function add(id){let f=foods.find(x=>x.id==id);let ex=cart.find(x=>x.id==id);if(ex)ex.qty++;else cart.push({...f,qty:1});document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);if(navigator.vibrate)navigator.vibrate(50);}
-function showCart(){document.getElementById("menu").classList.add("hidden");let page=document.getElementById("cartPage");page.classList.remove("hidden");let total=cart.reduce((a,b)=>a+b.p*b.qty,0);if(cart.length==0){page.innerHTML=`<div class="text-center mt-20"><div class="text-6xl">🛒</div><p class="text-gray-400 mt-4">Your cart is empty</p><button onclick="showHome()" class="mt-4 bg-[#EA580C] text-white px-6 py-2 rounded-full font-bold">Browse Menu</button></div>`;return;}page.innerHTML=`<h2 class="font-black text-xl mb-4">Your Cart - ${cart.length} items</h2>`+cart.map(x=>`<div class="flex justify-between items-center py-3 border-b"><div><p class="font-bold text-sm">${x.i} ${x.n}</p><p class="text-xs text-gray-500">Qty ${x.qty} • ${x.p.toLocaleString()} UGX</p><div class="flex gap-2 mt-1"><button onclick="changeQty(${x.id},-1)" class="bg-gray-100 px-2 rounded">-</button><span class="text-xs font-bold">${x.qty}</span><button onclick="changeQty(${x.id},1)" class="bg-gray-100 px-2 rounded">+</button></div></div><div class="text-right"><b class="text-sm">${(x.p*x.qty).toLocaleString()} UGX</b><br><button onclick="removeItem(${x.id})" class="text-red-500 text-xs mt-1">Remove</button></div></div>`).join("")+`<div class="mt-6 bg-gray-50 p-4 rounded-xl space-y-2 text-sm"><div class="flex justify-between"><span>Subtotal</span><span>${total.toLocaleString()} UGX</span></div><div class="flex justify-between"><span>Delivery Fee (Kataza)</span><span>1,500 UGX</span></div><div class="flex justify-between font-black text-[16px] text-[#EA580C] pt-2 border-t"><span>Total</span><span>${(total+1500).toLocaleString()} UGX</span></div></div><input id="loc" placeholder="Your location e.g Hostel, Room No" class="w-full mt-4 p-3 border rounded-xl text-sm"><a id="waLink" href="#" target="_blank" class="block mt-4 bg-[#EA580C] text-white text-center py-4 rounded-xl font-black text-[15px]">PLACE ORDER — ${(total+1500).toLocaleString()} UGX on WhatsApp</a><p class="text-[11px] text-gray-400 text-center mt-2">Cash on Delivery • MTN MoMo Accepted</p>`;setTimeout(()=>{let loc=document.getElementById("loc");if(loc){loc.addEventListener('input',updateWa);updateWa();}},100);function updateWa(){let l=document.getElementById("loc")?.value||"Kataza";let msg=`Hello QuickBite Kataza!%0A%0AMy Order:%0A${cart.map(x=>`- ${x.n} x${x.qty} = ${x.p*x.qty} UGX`).join('%0A')}%0A%0ASubtotal: ${total} UGX%0ADelivery: 1500 UGX%0ATotal: ${total+1500} UGX%0ALocation: ${l}%0APayment: Cash on Delivery`;let link=document.getElementById("waLink");if(link)link.href=`https://wa.me/256700000000?text=${msg}`;}}
-function showHome(){document.getElementById("cartPage").classList.add("hidden");document.getElementById("menu").classList.remove("hidden");}
-function changeQty(id,d){let it=cart.find(x=>x.id==id);if(!it)return;it.qty+=d;if(it.qty<=0)removeItem(id);else{ document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);showCart();}}
-function removeItem(id){cart=cart.filter(x=>x.id!=id);document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);showCart();}
-render();
+let cart=[], currentCat='All';
+function renderPopular(){document.getElementById("popular").innerHTML=foods.slice(0,3).map(f=>`<div class="card rounded-xl overflow-hidden border" style="border-color:#333"><div class="h-16 card2 flex items-center justify-center text-2xl">${f.i}</div><div class="p-2"><p class="text-[10px] font-bold">${f.n}</p><p class="text-[9px] orange font-bold">UGX ${f.p}</p></div></div>`).join("")}
+function renderCats(){document.getElementById("cats").innerHTML=['All','Rice','Chips','Rolex','Juice','Soda'].map(c=>`<button onclick="setCat('${c}')" class="${currentCat==c?'bg-orange text-black':'card text-mute'} px-3 py-1.5 rounded-full text-[10px] font-bold border" style="border-color:#333">${c}</button>`).join("")}
+function renderMenu(){renderCats();let q=(document.getElementById("search")?.value||"").toLowerCase();let list=foods.filter(f=>(currentCat=='All'||f.cat==currentCat)&&f.n.toLowerCase().includes(q));document.getElementById("menuList").innerHTML=list.map(f=>`<div class="card rounded-2xl p-3 flex gap-3 mb-2 border" style="border-color:#333"><div class="w-14 h-14 card2 rounded-xl flex items-center justify-center text-2xl">${f.i}</div><div class="flex-1"><p class="font-bold text-[12px]">${f.n}</p><p class="text-[10px] text-mute">${f.d}</p><p class="orange font-black text-[11px] mt-1">UGX ${f.p.toLocaleString()}</p></div><button onclick="add(${f.id})" class="w-7 h-7 bg-orange text-black rounded-full font-black">+</button></div>`).join("")}
+function setCat(c){currentCat=c;renderMenu();}
+function add(id){let f=foods.find(x=>x.id==id);let ex=cart.find(x=>x.id==id);if(ex)ex.qty++;else cart.push({...f,qty:1});updateCart();}
+function updateCart(){let total=cart.reduce((a,b)=>a+b.p*b.qty,0);let count=cart.reduce((a,b)=>a+b.qty,0);document.getElementById("cartCount").innerText=count;document.getElementById("floatText").innerText=`${count} items • UGX ${total.toLocaleString()}`;document.getElementById("floatingCart").classList.toggle("hidden",count==0);}
+function showCart(){document.getElementById("homeScreen").classList.add("hidden");document.getElementById("cartScreen").classList.remove("hidden");let total=cart.reduce((a,b)=>a+b.p*b.qty,0);let fee=2000;document.getElementById("cartItems").innerHTML=cart.map(f=>`<div class="card rounded-xl p-3 flex justify-between items-center border" style="border-color:#333"><div class="flex gap-3 items-center"><div class="w-10 h-10 card2 rounded-lg flex items-center justify-center">${f.i}</div><div><p class="text-[12px] font-bold">${f.n} x${f.qty}</p><p class="text-[10px] text-mute">Qty ${f.qty}</p></div></div><b class="text-[12px]">UGX ${f.p*f.qty}</b></div>`).join("")||"<p class='text-mute text-center mt-10 text-sm'>Cart empty</p>";document.getElementById("cartSummary").innerHTML=`<div class="flex justify-between text-mute"><span>Delivery Address</span><span class="orange">Change</span></div><p class="text-[11px]">Kataza, Kampala, Uganda</p><div class="pt-3 border-t space-y-1 mt-3" style="border-color:#333"><div class="flex justify-between"><span>Subtotal</span><span>UGX ${total}</span></div><div class="flex justify-between"><span>Delivery Fee</span><span>UGX ${fee}</span></div><div class="flex justify-between font-black orange"><span>Total</span><span>UGX ${total+fee}</span></div></div>`;let msg=`Hello Quick Bite Kataza!%0AOrder:%0A${cart.map(f=>`- ${f.n} x${f.qty} = ${f.p*f.qty} UGX`).join('%0A')}%0ATotal: UGX ${total+fee}%0AAddress: Kataza`;document.getElementById("checkoutBtn").innerText=`Checkout • Pay UGX ${(total+fee).toLocaleString()}`;document.getElementById("checkoutBtn").href=`https://wa.me/256700000000?text=${msg}`;}
+function showHome(){document.getElementById("cartScreen").classList.add("hidden");document.getElementById("homeScreen").classList.remove("hidden");}
+renderPopular();renderMenu();
 </script>
 </body>
 </html>
