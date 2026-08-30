@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickBite Kataza - Rice, Fries, Rolex, Juice, Soda</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FFF7ED]">
+<div class="max-w-[430px] mx-auto bg-white min-h-screen shadow-xl pb-20">
+
+<!-- HEADER -->
+<div class="bg-[#EA580C] text-white p-4 sticky top-0 z-20">
+<h1 class="font-black text-[22px] tracking-tight">QuickBite • Kataza</h1>
+<p class="text-[11px] mt-1 bg-white/20 p-2 rounded-lg">📍 Kataza, Kampala • 25-35 min delivery • Pay on Delivery</p>
+</div>
+
+<!-- SEARCH -->
+<div class="p-4">
+<h2 class="font-bold text-[18px]">What are you craving today?</h2>
+<input id="search" oninput="render()" placeholder="Search rice, chips, rolex, juice, soda..." class="w-full mt-3 p-3.5 bg-gray-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500">
+<div class="flex gap-2 mt-3 overflow-x-auto">
+<button onclick="filterCat('All')" class="catBtn bg-[#EA580C] text-white px-4 py-1.5 rounded-full text-xs font-bold">All</button>
+<button onclick="filterCat('Rice')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Rice</button>
+<button onclick="filterCat('Chips')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Chips</button>
+<button onclick="filterCat('Rolex')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Rolex</button>
+<button onclick="filterCat('Soda')" class="catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold">Soda</button>
+</div>
+</div>
+
+<!-- MENU -->
+<div id="menu" class="grid grid-cols-2 gap-3 p-4"></div>
+
+<!-- CART PAGE -->
+<div id="cartPage" class="p-4 hidden"></div>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 w-full max-w-[430px] bg-white border-t flex justify-around py-3.5 z-10">
+<button onclick="showHome()" class="font-black text-[#EA580C] flex flex-col items-center text-xs"><span class="text-xl">🏠</span>Home</button>
+<button onclick="showCart()" class="font-bold flex flex-col items-center text-xs relative"><span class="text-xl">🛒</span>Cart <span id="count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] px-1.5 rounded-full">0</span></button>
+<button onclick="window.open('https://wa.me/256700000000','_blank')" class="font-bold flex flex-col items-center text-xs"><span class="text-xl">💬</span>WhatsApp</button>
+</div>
+
+</div>
+
+<script>
+let currentCat='All';
+const foods=[
+{id:1,n:"Rice & Beans",p:5000,i:"🍛",cat:"Rice",d:"Steamed rice + beans"},
+{id:2,n:"Rice & Meat",p:12000,i:"🍛",cat:"Rice",d:"Pilau + beef stew"},
+{id:3,n:"Chips / Fries",p:4000,i:"🍟",cat:"Chips",d:"Crispy golden chips"},
+{id:4,n:"Chips Masala",p:6000,i:"🍟",cat:"Chips",d:"Chips + masala + salsa"},
+{id:5,n:"Rolex Chapati",p:3500,i:"🌯",cat:"Rolex",d:"Egg + chapati + veggies"},
+{id:6,n:"Rolex Special",p:5000,i:"🌯",cat:"Rolex",d:"2 eggs + avocado + cheese"},
+{id:7,n:"Full Plate",p:15000,i:"🍱",cat:"Rice",d:"Rice + chips + meat + soda"},
+{id:8,n:"Mango Juice",p:3000,i:"🧃",cat:"Soda",d:"Fresh mango 500ml"},
+{id:9,n:"Passion Juice",p:3000,i:"🧃",cat:"Soda",d:"Fresh passion 500ml"},
+{id:10,n:"Soda Coke",p:2000,i:"🥤",cat:"Soda",d:"Coke 500ml cold"},
+{id:11,n:"Fanta / Sprite",p:2000,i:"🥤",cat:"Soda",d:"500ml cold"},
+];
+let cart=[];
+function filterCat(c){currentCat=c;document.querySelectorAll('.catBtn').forEach(b=>{b.className='catBtn bg-gray-100 px-4 py-1.5 rounded-full text-xs font-bold'; if(b.innerText==c) b.className='catBtn bg-[#EA580C] text-white px-4 py-1.5 rounded-full text-xs font-bold'});render();}
+function render(){let q=document.getElementById("search").value.toLowerCase();let list=foods.filter(x=>(currentCat=='All'||x.cat==currentCat)&&x.n.toLowerCase().includes(q));document.getElementById("menu").innerHTML=list.map(x=>`<div onclick="add(${x.id})" class="border-2 border-orange-50 rounded-2xl p-4 text-center active:border-[#EA580C] active:bg-orange-50"><div class="text-5xl">${x.i}</div><p class="font-black text-[13px] mt-2 leading-tight">${x.n}</p><p class="text-gray-400 text-[10px]">${x.d}</p><p class="text-[#EA580C] font-black text-[13px] mt-1">${x.p.toLocaleString()} UGX</p><button class="mt-2 w-full bg-black text-white text-[11px] py-1.5 rounded-full font-bold">+ ADD</button></div>`).join("")}
+function add(id){let f=foods.find(x=>x.id==id);let ex=cart.find(x=>x.id==id);if(ex)ex.qty++;else cart.push({...f,qty:1});document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);if(navigator.vibrate)navigator.vibrate(50);}
+function showCart(){document.getElementById("menu").classList.add("hidden");let page=document.getElementById("cartPage");page.classList.remove("hidden");let total=cart.reduce((a,b)=>a+b.p*b.qty,0);if(cart.length==0){page.innerHTML=`<div class="text-center mt-20"><div class="text-6xl">🛒</div><p class="text-gray-400 mt-4">Your cart is empty</p><button onclick="showHome()" class="mt-4 bg-[#EA580C] text-white px-6 py-2 rounded-full font-bold">Browse Menu</button></div>`;return;}page.innerHTML=`<h2 class="font-black text-xl mb-4">Your Cart - ${cart.length} items</h2>`+cart.map(x=>`<div class="flex justify-between items-center py-3 border-b"><div><p class="font-bold text-sm">${x.i} ${x.n}</p><p class="text-xs text-gray-500">Qty ${x.qty} • ${x.p.toLocaleString()} UGX</p><div class="flex gap-2 mt-1"><button onclick="changeQty(${x.id},-1)" class="bg-gray-100 px-2 rounded">-</button><span class="text-xs font-bold">${x.qty}</span><button onclick="changeQty(${x.id},1)" class="bg-gray-100 px-2 rounded">+</button></div></div><div class="text-right"><b class="text-sm">${(x.p*x.qty).toLocaleString()} UGX</b><br><button onclick="removeItem(${x.id})" class="text-red-500 text-xs mt-1">Remove</button></div></div>`).join("")+`<div class="mt-6 bg-gray-50 p-4 rounded-xl space-y-2 text-sm"><div class="flex justify-between"><span>Subtotal</span><span>${total.toLocaleString()} UGX</span></div><div class="flex justify-between"><span>Delivery Fee (Kataza)</span><span>1,500 UGX</span></div><div class="flex justify-between font-black text-[16px] text-[#EA580C] pt-2 border-t"><span>Total</span><span>${(total+1500).toLocaleString()} UGX</span></div></div><input id="loc" placeholder="Your location e.g Hostel, Room No" class="w-full mt-4 p-3 border rounded-xl text-sm"><a id="waLink" href="#" target="_blank" class="block mt-4 bg-[#EA580C] text-white text-center py-4 rounded-xl font-black text-[15px]">PLACE ORDER — ${(total+1500).toLocaleString()} UGX on WhatsApp</a><p class="text-[11px] text-gray-400 text-center mt-2">Cash on Delivery • MTN MoMo Accepted</p>`;setTimeout(()=>{let loc=document.getElementById("loc");if(loc){loc.addEventListener('input',updateWa);updateWa();}},100);function updateWa(){let l=document.getElementById("loc")?.value||"Kataza";let msg=`Hello QuickBite Kataza!%0A%0AMy Order:%0A${cart.map(x=>`- ${x.n} x${x.qty} = ${x.p*x.qty} UGX`).join('%0A')}%0A%0ASubtotal: ${total} UGX%0ADelivery: 1500 UGX%0ATotal: ${total+1500} UGX%0ALocation: ${l}%0APayment: Cash on Delivery`;let link=document.getElementById("waLink");if(link)link.href=`https://wa.me/256700000000?text=${msg}`;}}
+function showHome(){document.getElementById("cartPage").classList.add("hidden");document.getElementById("menu").classList.remove("hidden");}
+function changeQty(id,d){let it=cart.find(x=>x.id==id);if(!it)return;it.qty+=d;if(it.qty<=0)removeItem(id);else{ document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);showCart();}}
+function removeItem(id){cart=cart.filter(x=>x.id!=id);document.getElementById("count").innerText=cart.reduce((a,b)=>a+b.qty,0);showCart();}
+render();
+</script>
+</body>
+</html>
