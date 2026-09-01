@@ -1,95 +1,62 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quick Bite Kataza</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick Bite Kataza - Modern</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-:root{--bg:#1A1A1A;--card:#2A2A2A;--card2:#333;--text:#fff;--muted:#9CA3AF;--orange:#FF6B00}
-.light{--bg:#FFF7ED;--card:#fff;--card2:#F3F4F6;--text:#111;--muted:#6B7280}
-body{background:var(--bg);color:var(--text);transition:0.3s}
-.card{background:var(--card)}
-.card2{background:var(--card2)}
-.text-mute{color:var(--muted)}
-.orange{color:var(--orange)}
-.bg-orange{background:var(--orange)}
-</style>
-</head>
-<body class="">
-<div class="max-w-[430px] mx-auto min-h-screen pb-24" style="background:var(--bg)">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>body{font-family:'Plus Jakarta Sans',sans-serif;transition:.3s}
+.glass{backdrop-filter:blur(16px);background:rgba(42,42,42,.8)}
+.card{border-radius:24px}.btn{border-radius:999px}
+</style></head>
+<body class="bg-[#0f0f0f] text-white">
+<div class="max-w-[430px] mx-auto min-h-screen pb-28 bg-[#0f0f0f] relative">
 
-<!-- HEADER -->
 <div class="p-5 flex justify-between items-center">
-<div class="flex items-center gap-2 text-[11px]">🇺🇬 <b>Quick Bite Kataza</b></div>
-<button onclick="toggleTheme()" id="themeBtn" class="text-[11px] border px-3 py-1 rounded-full">🌙 Night Mode</button>
+<div class="flex gap-2 items-center"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">🔥</div><div><p class="font-extrabold leading-none text-[15px]">Quick Bite</p><p class="font-bold text-[13px] text-[#FF6B00]">Kataza</p></div></div>
+<div class="flex gap-2"><button class="w-8 h-8 bg-[#2A2A2A] rounded-full">🔔</button><button onclick="toggleTheme()" class="w-8 h-8 bg-[#2A2A2A] rounded-full">🌙</button></div>
 </div>
 
 <div class="px-5">
-<h1 class="text-[#FF6B00] font-black text-[30px]">QUICK BITE</h1>
-<p class="text-[11px] text-mute -mt-1">📍 Kataza, Uganda • Night Delivery</p>
+<p class="text-[16px] font-bold">Good evening 👋</p>
+<p class="text-[11px] text-gray-400 flex items-center gap-1">📍 Deliver to • Kataza, City Center</p>
 
-<div class="relative mt-4">
-<input id="search" oninput="renderMenu()" placeholder="Search rice, rolex, juice, soda..." class="w-full card rounded-full py-3 px-5 text-[12px] outline-none border border-[#333]">
-</div>
+<div class="mt-4 relative"><input id="search" placeholder="Search for food, Rolex, chips..." class="w-full bg-[#2A2A2A] card py-3.5 px-5 text-[12px] outline-none border border-[#333]"><span class="absolute right-4 top-3.5">⌕</span></div>
 
-<div class="card border border-[#3A2A1A] rounded-2xl p-4 mt-4">
-<p class="font-black text-sm">STREET FOOD • NOW OPEN</p>
-<p class="text-[11px] orange">Fast • Fresh • Affordable</p>
-</div>
-</div>
+<div class="mt-6 flex justify-between items-center"><p class="font-bold text-sm">Popular near you</p><span class="text-[11px] text-[#FF6B00]">See all →</span></div>
 
-<div id="homeScreen" class="px-5 mt-5">
-<p class="font-bold text-sm mb-3">Popular Near You</p>
-<div id="popular" class="grid grid-cols-3 gap-2"></div>
-<div class="mt-6">
-<div class="flex gap-2 mb-3 overflow-x-auto" id="cats"></div>
-<div id="menuList"></div>
-</div>
+<div id="popular" class="grid grid-cols-2 gap-3 mt-3"></div>
+
+<div class="mt-8"><p class="font-bold text-sm">Full Menu</p><div id="menu" class="mt-3 space-y-3"></div></div>
 </div>
 
-<div id="cartScreen" class="hidden px-5 mt-2">
-<div class="flex items-center gap-3 mb-4"><button onclick="showHome()" class="text-xl">‹</button><h2 class="font-black text-lg mx-auto">Your Cart</h2></div>
-<div id="cartItems" class="space-y-3"></div>
-<div id="cartSummary" class="card rounded-2xl p-4 mt-4 space-y-2 text-[12px]"></div>
-<a id="checkoutBtn" href="#" target="_blank" class="block mt-4 bg-orange text-black text-center py-4 rounded-full font-black">Checkout • Pay UGX 0</a>
-<p class="text-[10px] text-mute text-center mt-2">✓ Cash on Delivery • Mobile Money Accepted</p>
+<!-- Floating Cart -->
+<div id="float" class="hidden fixed bottom-[88px] left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-gradient-to-r from-orange-400 to-orange-600 text-black rounded-full p-3 flex justify-between items-center z-30 shadow-2xl">
+<span id="floatTxt" class="text-[13px] font-extrabold px-2">0 items</span>
+<button onclick="openCart()" class="font-bold text-[13px]">Checkout • UGX 0 →</button>
 </div>
 
-<!-- NAV -->
-<div class="fixed bottom-0 w-full max-w-[430px] card border-t flex justify-around py-3 z-20" style="border-color:#2A2A2A">
-<button onclick="showHome()" class="flex flex-col items-center orange"><span>⌂</span><span class="text-[9px]">Home</span></button>
-<button onclick="showCart()" class="flex flex-col items-center text-mute relative"><span>🛒</span><span id="cartCount" class="absolute -top-1 -right-1 bg-orange text-black text-[8px] px-1 rounded-full">0</span><span class="text-[9px]">Cart</span></button>
-<button onclick="toggleTheme()" class="flex flex-col items-center text-mute"><span>🌙</span><span class="text-[9px]">Theme</span></button>
+<!-- Bottom Nav -->
+<div class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] glass card flex justify-around py-3 z-20 border border-[#333]">
+<button class="flex flex-col items-center text-[#FF6B00]"><span>⌂</span><span class="text-[9px] mt-1">Home</span></button>
+<button class="flex flex-col items-center text-gray-400"><span>◍</span><span class="text-[9px]">Search</span></button>
+<button onclick="openCart()" class="flex flex-col items-center text-gray-400 relative"><span>🛒</span><span id="count" class="absolute -top-1 -right-1 bg-[#FF6B00] text-black text-[8px] px-1 rounded-full">0</span><span class="text-[9px]">Cart</span></button>
+<button class="flex flex-col items-center text-gray-400"><span>◎</span><span class="text-[9px]">Profile</span></button>
 </div>
 
-<div id="floatingCart" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] card border rounded-full p-2 flex justify-between items-center z-30">
-<span id="floatText" class="text-[11px] font-bold px-3">0 items</span>
-<button onclick="showCart()" class="bg-orange text-black text-[11px] font-black px-4 py-2 rounded-full">View Cart →</button>
-</div>
+<div id="cartPage" class="hidden fixed inset-0 bg-[#FAFAFA] text-black z-40 overflow-y-auto p-5"><div id="cartContent"></div></div>
 
 </div>
 <script>
-let isDark=true;
-function toggleTheme(){isDark=!isDark;document.documentElement.className=isDark?'':'light';document.body.className=isDark?'':'light';document.getElementById("themeBtn").innerText=isDark?'🌙 Night Mode':'☀️ Light Mode';}
-const foods=[
-{id:1,n:"Rolex Special",p:5000,cat:"Rolex",d:"Chapati + egg, onions, cabbage & chili",i:"🌯"},
-{id:2,n:"Rice with Beans & Beef",p:8000,cat:"Rice",d:"Classic beans, beef stew, onions",i:"🍛"},
-{id:3,n:"Crispy Chips Masala",p:4500,cat:"Chips",d:"Spiced chips with kachumbari salsa",i:"🍟"},
-{id:4,n:"Fresh Mango Juice",p:3000,cat:"Juice",d:"Cold pressed mango 500ml",i:"🧃"},
-{id:5,n:"Soda Coke 500ml",p:2500,cat:"Soda",d:"Ice cold classic",i:"🥤"},
-{id:6,n:"Full Plate",p:12000,cat:"Rice",d:"Rice + chips + meat + soda",i:"🍱"},
+let foods=[
+{id:1,n:"Rolex Egg & Chapati",p:5000,img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300",cat:"Rolex",rate:"4.6 • 15 min"},
+{id:2,n:"Smoked Beef Skewers",p:8000,img:"https://images.unsplash.com/photo-1546964053-d2934cd7a439?w=300",cat:"Rice",rate:"4.8 • 20 min"},
+{id:3,n:"Samosa Platter 6pcs",p:6000,img:"https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300",cat:"Chips",rate:"4.5 • 18 min"},
+{id:4,n:"Chips Fries + Ketchup",p:3000,img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300",cat:"Chips",rate:"4.7 • 12 min"},
 ];
-let cart=[], currentCat='All';
-function renderPopular(){document.getElementById("popular").innerHTML=foods.slice(0,3).map(f=>`<div class="card rounded-xl overflow-hidden border" style="border-color:#333"><div class="h-16 card2 flex items-center justify-center text-2xl">${f.i}</div><div class="p-2"><p class="text-[10px] font-bold">${f.n}</p><p class="text-[9px] orange font-bold">UGX ${f.p}</p></div></div>`).join("")}
-function renderCats(){document.getElementById("cats").innerHTML=['All','Rice','Chips','Rolex','Juice','Soda'].map(c=>`<button onclick="setCat('${c}')" class="${currentCat==c?'bg-orange text-black':'card text-mute'} px-3 py-1.5 rounded-full text-[10px] font-bold border" style="border-color:#333">${c}</button>`).join("")}
-function renderMenu(){renderCats();let q=(document.getElementById("search")?.value||"").toLowerCase();let list=foods.filter(f=>(currentCat=='All'||f.cat==currentCat)&&f.n.toLowerCase().includes(q));document.getElementById("menuList").innerHTML=list.map(f=>`<div class="card rounded-2xl p-3 flex gap-3 mb-2 border" style="border-color:#333"><div class="w-14 h-14 card2 rounded-xl flex items-center justify-center text-2xl">${f.i}</div><div class="flex-1"><p class="font-bold text-[12px]">${f.n}</p><p class="text-[10px] text-mute">${f.d}</p><p class="orange font-black text-[11px] mt-1">UGX ${f.p.toLocaleString()}</p></div><button onclick="add(${f.id})" class="w-7 h-7 bg-orange text-black rounded-full font-black">+</button></div>`).join("")}
-function setCat(c){currentCat=c;renderMenu();}
-function add(id){let f=foods.find(x=>x.id==id);let ex=cart.find(x=>x.id==id);if(ex)ex.qty++;else cart.push({...f,qty:1});updateCart();}
-function updateCart(){let total=cart.reduce((a,b)=>a+b.p*b.qty,0);let count=cart.reduce((a,b)=>a+b.qty,0);document.getElementById("cartCount").innerText=count;document.getElementById("floatText").innerText=`${count} items • UGX ${total.toLocaleString()}`;document.getElementById("floatingCart").classList.toggle("hidden",count==0);}
-function showCart(){document.getElementById("homeScreen").classList.add("hidden");document.getElementById("cartScreen").classList.remove("hidden");let total=cart.reduce((a,b)=>a+b.p*b.qty,0);let fee=2000;document.getElementById("cartItems").innerHTML=cart.map(f=>`<div class="card rounded-xl p-3 flex justify-between items-center border" style="border-color:#333"><div class="flex gap-3 items-center"><div class="w-10 h-10 card2 rounded-lg flex items-center justify-center">${f.i}</div><div><p class="text-[12px] font-bold">${f.n} x${f.qty}</p><p class="text-[10px] text-mute">Qty ${f.qty}</p></div></div><b class="text-[12px]">UGX ${f.p*f.qty}</b></div>`).join("")||"<p class='text-mute text-center mt-10 text-sm'>Cart empty</p>";document.getElementById("cartSummary").innerHTML=`<div class="flex justify-between text-mute"><span>Delivery Address</span><span class="orange">Change</span></div><p class="text-[11px]">Kataza, Kampala, Uganda</p><div class="pt-3 border-t space-y-1 mt-3" style="border-color:#333"><div class="flex justify-between"><span>Subtotal</span><span>UGX ${total}</span></div><div class="flex justify-between"><span>Delivery Fee</span><span>UGX ${fee}</span></div><div class="flex justify-between font-black orange"><span>Total</span><span>UGX ${total+fee}</span></div></div>`;let msg=`Hello Quick Bite Kataza!%0AOrder:%0A${cart.map(f=>`- ${f.n} x${f.qty} = ${f.p*f.qty} UGX`).join('%0A')}%0ATotal: UGX ${total+fee}%0AAddress: Kataza`;document.getElementById("checkoutBtn").innerText=`Checkout • Pay UGX ${(total+fee).toLocaleString()}`;document.getElementById("checkoutBtn").href=`https://wa.me/256706826774?text=${msg}`;}
-function showHome(){document.getElementById("cartScreen").classList.add("hidden");document.getElementById("homeScreen").classList.remove("hidden");}
-renderPopular();renderMenu();
-</script>
-</body>
-</html>
+let cart=JSON.parse(localStorage.getItem('qb_cart')||'[]');
+function render(){document.getElementById('popular').innerHTML=foods.slice(0,4).map(f=>`<div class="card overflow-hidden bg-[#1E1E1E] border border-[#2A2A2A]"><img src="${f.img}" class="h-28 w-full object-cover"><div class="p-3"><p class="font-bold text-[12px] leading-tight">${f.n}</p><p class="text-[10px] text-gray-400 mt-1">⭐ ${f.rate}</p><div class="flex justify-between items-center mt-2"><span class="text-[11px] font-bold text-[#FF6B00]">UGX ${f.p}</span><button onclick="add(${f.id})" class="w-6 h-6 bg-white text-black rounded-full font-bold">+</button></div></div></div>`).join('');document.getElementById('menu').innerHTML=foods.map(f=>`<div class="flex gap-3 bg-[#1E1E1E] card p-3 border border-[#2A2A2A]"><img src="${f.img}" class="w-16 h-16 rounded-2xl object-cover"><div class="flex-1"><p class="font-bold text-[13px]">${f.n}</p><p class="text-[10px] text-gray-400">${f.rate} • ${f.cat}</p><p class="text-[11px] font-bold text-[#FF6B00] mt-1">UGX ${f.p.toLocaleString()}</p></div><button onclick="add(${f.id})" class="w-8 h-8 bg-white text-black rounded-full font-black self-center">+</button></div>`).join('');updateFloat();}
+function add(id){let f=foods.find(x=>x.id==id);let e=cart.find(x=>x.id==id);if(e)e.qty++;else cart.push({...f,qty:1});localStorage.setItem('qb_cart',JSON.stringify(cart));render();updateFloat();}
+function updateFloat(){let c=cart.reduce((a,b)=>a+b.qty,0);let t=cart.reduce((a,b)=>a+b.p*b.qty,0);document.getElementById('count').innerText=c;document.getElementById('floatTxt').innerText=`${c} items`;document.getElementById('float').classList.toggle('hidden',c==0);document.getElementById('float').querySelector('button').innerText=`Checkout • UGX ${t.toLocaleString()} →`;}
+function openCart(){let t=cart.reduce((a,b)=>a+b.p*b.qty,0);let fee=2000;document.getElementById('cartPage').classList.remove('hidden');document.getElementById('cartContent').innerHTML=`<div class="flex justify-between items-center"><button onclick="document.getElementById('cartPage').classList.add('hidden')" class="text-xl">✕</button><b>Cart (${cart.length})</b><span></span></div><div class="mt-4 bg-white rounded-[20px] p-4 shadow-sm"><p class="text-xs text-gray-500">Deliver to • 15-25 min</p><p class="font-bold text-sm mt-1">Kataza, Kampala - Edit ✏️</p></div><div class="mt-4 space-y-3">${cart.map(f=>`<div class="bg-white rounded-2xl p-3 flex gap-3 shadow-sm"><img src="${f.img}" class="w-14 h-14 rounded-xl object-cover"><div class="flex-1"><p class="font-bold text-[13px]">${f.n}</p><p class="text-[11px] text-gray-500">Qty: ${f.qty} • UGX ${f.p}</p></div><b class="text-[13px]">UGX ${f.p*f.qty}</b></div>`).join('')||'Cart empty'}</div><div class="mt-6 space-y-2 text-sm"><div class="flex justify-between"><span>Subtotal</span><span>UGX ${t}</span></div><div class="flex justify-between"><span>Delivery fee</span><span>UGX ${fee}</span></div><div class="flex justify-between font-extrabold text-[16px] mt-2 pt-3 border-t"><span>Total</span><span class="text-[#FF6B00]">UGX ${t+fee}</span></div></div><a href="https://wa.me/256700000000?text=Order ${cart.map(f=>f.n+' x'+f.qty).join(', ')} Total UGX ${t+fee}" class="block mt-6 bg-gradient-to-r from-orange-400 to-orange-600 text-white text-center py-4 rounded-full font-black">Place Order • UGX ${t+fee}</a>`;}
+function toggleTheme(){alert('Light mode coming - tap profile for now');}
+render();
+</script></body></html>
