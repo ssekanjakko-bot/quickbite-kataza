@@ -6,7 +6,7 @@
 <div class="absolute bottom-7 left-7 right-7 z-10">
 <p class="text-white/40 text-[10px] tracking-[3px] font-bold" id="topStatus">SEARCHING ORDER...</p>
 <h1 class="serif text-white text-[32px] leading-[0.9] mt-2 font-bold">Your order<br><span class="text-[#D4B67A] italic font-normal" id="mainHead">is on the way</span></h1>
-<div class="mt-4 flex items-center gap-3"><div id="liveDot" class="w-3 h-3 bg-[#D4B67A] rounded-full pulse"></div><p class="text-white/60 text-[11px]" id="liveText">Connecting to kitchen...</p></div>
+<div class="mt-4 flex items-center gap-3"><div id="liveDot" class="w-3 h-3 bg-[#D4B67A] rounded-full pulse"></div><p class="text-white/60 text-[11px]" id="liveText">Connecting...</p></div>
 </div>
 </div>
 
@@ -16,7 +16,7 @@
 </div>
 
 <div id="orderBox" class="hidden px-5 mt-6 pb-10 space-y-4">
-<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="cust" class="text-[11px] text-black/50 mt-1"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
+<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="cust" class="text-[11px] text-black/50 mt-1"></p><p id="otime" class="text-[10px] text-black/40 mt-1"></p><p id="elapsed" class="text-[10px] font-bold text-[#D4B67A] mt-0.5"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
 
 <div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white">
 <p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p>
@@ -24,88 +24,52 @@
 </div>
 
 <div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
-
 <div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
+
+<!-- CANCEL -->
+<button id="cancelBtn" onclick="cancelOrder()" class="hidden w-full bg-white border border-red-200 text-red-500 py-3.5 rounded-full text-[11px] font-bold tracking-widest">CANCEL ORDER ✕</button>
 
 <div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call kitchen</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
 </div>
-
-<p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found. Check ID. If you ordered on this phone, your last order loads automatically.</p>
-
+<p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found.</p>
 </div><script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
-let unsub=null;
-const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy your meal!',icon:'✓'}];
-const heads={new:'is confirmed',preparing:'is being cooked', 'on the way':'is on the way', served:'has arrived', canceled:'was canceled'};
-
-// === SOUND ONLY - ADDED ===
-let lastStatus=null;
-let audioCtx=null;
-function getAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
-function beep(freq, dur, vol=0.3, delay=0){
- try{
-  setTimeout(()=>{
-   let ctx=getAudio(); let o=ctx.createOscillator(); let g=ctx.createGain();
-   o.frequency.value=freq; o.connect(g); g.connect(ctx.destination); g.gain.value=vol;
-   o.start(); setTimeout(()=>o.stop(), dur);
-  }, delay);
- }catch(e){}
-}
-function playStatusSound(status){
- if(status==='new'){ beep(800,180); }
- else if(status==='preparing'){ beep(600,180); beep(900,220,0.3,200); }
- else if(status==='on the way'){ beep(500,180); beep(700,180,0.3,150); beep(950,200,0.35,320); }
- else if(status==='served'){ [523,659,783,1046].forEach((f,i)=>beep(f,280,0.3,i*130)); }
- if(navigator.vibrate) navigator.vibrate([200,80,200]);
-}
-// Unlock audio on first tap (required for mobile)
-document.addEventListener('click', ()=>{ try{ getAudio(); }catch(e){} }, {once:true});
-// === END SOUND ===
-
+let unsub=null, lastStatus=null, currentId=null, orderCreatedAt=null;
+const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy!',icon:'✓'}];
+const heads={new:'is confirmed',preparing:'is being cooked','on the way':'is on the way',served:'has arrived',canceled:'was canceled'};
+let audioCtx=null; function getAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
+function beep(f,d,v=0.3,dl=0){ try{ setTimeout(()=>{ let ctx=getAudio(); let o=ctx.createOscillator(); let g=ctx.createGain(); o.frequency.value=f; o.connect(g); g.connect(ctx.destination); g.gain.value=v; o.start(); setTimeout(()=>o.stop(),d); },dl);}catch(e){} }
+function playStatusSound(s){ if(s==='preparing'){beep(600,180); beep(900,220,0.3,200);} else if(s==='on the way'){beep(500,180); beep(700,180,0.3,150); beep(950,200,0.35,320);} else if(s==='served'){ [523,659,783,1046].forEach((f,i)=>beep(f,280,0.3,i*130));} else if(s==='canceled'){beep(300,400,0.4);} if(navigator.vibrate) navigator.vibrate([200,80,200]); }
+document.addEventListener('click', ()=>{ try{getAudio();}catch(e){} }, {once:true});
 function renderSteps(current){
  let idx=flow.findIndex(f=>f.k===current);
- if(current==='canceled'){ steps.innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center"><p class="text-red-400 font-bold text-[13px]">Order Canceled</p></div>`; topStatus.innerText='CANCELED'; mainHead.innerText='was canceled'; liveDot.className='w-3 h-3 bg-red-500 rounded-full'; liveText.innerText='Canceled by admin'; return; }
- steps.innerHTML=flow.map((f,i)=>{
-  let active=i<=idx, isNow=f.k===current;
-  return `<div class="flex gap-4 relative"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold z-10 ${active? 'bg-[#D4B67A] text-black'+(isNow?' pulse':'') : 'bg-white/10 text-white/30'}">${f.icon}</div>${i<3?`<div class="w-[2px] h-10 mt-2 ${i<idx?'bg-[#D4B67A]':'bg-white/10'}"></div>`:''}</div><div class="pb-10"><p class="font-bold text-[13px] ${active?'text-white': 'text-white/30'}">${f.t} ${isNow?'<span class="ml-2 text-[9px] bg-[#D4B67A] text-black px-2 py-0.5 rounded-full">NOW</span>':''}</p><p class="text-[11px] ${active?'text-white/60':'text-white/20'} mt-1">${f.d}</p></div></div>`;
- }).join('');
- topStatus.innerText=(current||'NEW').toUpperCase(); mainHead.innerText=heads[current]||'is confirmed'; liveText.innerText=flow.find(f=>f.k===current)?.d||'Live updating...';
+ if(current==='canceled'){ steps.innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center"><p class="text-red-400 font-bold text-[13px]">Order Canceled</p><p class="text-[11px] text-white/40 mt-1">By customer</p></div>`; topStatus.innerText='CANCELED'; mainHead.innerText='was canceled'; liveDot.className='w-3 h-3 bg-red-500 rounded-full'; liveText.innerText='Canceled'; cancelBtn.classList.add('hidden'); return; }
+ if(current==='served'){ cancelBtn.classList.add('hidden'); } else if(['new','preparing'].includes(current)){ cancelBtn.classList.remove('hidden'); } else { cancelBtn.classList.add('hidden'); }
+ steps.innerHTML=flow.map((f,i)=>{ let active=i<=idx, isNow=f.k===current; return `<div class="flex gap-4 relative"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold z-10 ${active? 'bg-[#D4B67A] text-black'+(isNow?' pulse':'') : 'bg-white/10 text-white/30'}">${f.icon}</div>${i<3?`<div class="w-[2px] h-10 mt-2 ${i<idx?'bg-[#D4B67A]':'bg-white/10'}"></div>`:''}</div><div class="pb-10"><p class="font-bold text-[13px] ${active?'text-white': 'text-white/30'}">${f.t} ${isNow?'<span class="ml-2 text-[9px] bg-[#D4B67A] text-black px-2 py-0.5 rounded-full">NOW</span>':''}</p><p class="text-[11px] ${active?'text-white/60':'text-white/20'} mt-1">${f.d}</p></div></div>`; }).join('');
+ topStatus.innerText=(current||'NEW').toUpperCase(); mainHead.innerText=heads[current]||'is confirmed'; liveText.innerText=flow.find(f=>f.k===current)?.d||'Live';
 }
-
 function listen(id){
- if(unsub) unsub();
- document.getElementById('orderIdInput').value = id.slice(0,8).toUpperCase();
- localStorage.setItem('lastOrderId', id);
+ if(unsub) unsub(); id=id.trim(); currentId=id;
+ document.getElementById('orderIdInput').value=id.slice(0,8).toUpperCase(); localStorage.setItem('lastOrderId', id); sessionStorage.setItem('lastOrderId', id);
  orderBox.classList.remove('hidden'); notFound.classList.add('hidden'); oid.innerText=id.slice(0,8).toUpperCase();
  unsub=db.collection('orders').doc(id).onSnapshot(doc=>{
   if(!doc.exists){ orderBox.classList.add('hidden'); notFound.classList.remove('hidden'); return; }
-  let o=doc.data();
-  cust.innerText=(o.customer_name||'')+' • '+(o.customer_phone||'');
-  area.innerText=(o.area||'')+' • '+(o.location||'');
-  total.innerText='UGX '+(o.total||0).toLocaleString();
+  let o=doc.data(); if(o.created_at) orderCreatedAt=o.created_at.toDate();
+  cust.innerText=(o.customer_name||'')+' • '+(o.customer_phone||''); area.innerText=(o.area||'')+' • '+(o.location||''); total.innerText='UGX '+(o.total||0).toLocaleString();
   items.innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between items-center bg-[#F5F1E9] rounded-full px-4 py-2.5"><span class="text-[11px] font-bold">${i.name} x ${i.qty}</span><span class="text-[11px]">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
   if(o.admin_message){ adminMsgBox.classList.remove('hidden'); adminMsg.innerText=o.admin_message; } else adminMsgBox.classList.add('hidden');
-
-  // SOUND WHEN STATUS CHANGES
-  if(lastStatus && lastStatus!==o.status){
-    playStatusSound(o.status);
-  }
-  lastStatus=o.status;
-
-  renderSteps(o.status);
+  // time
+  if(orderCreatedAt){ otime.innerText='Ordered at '+orderCreatedAt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' • '+orderCreatedAt.toLocaleDateString(); let mins=Math.floor((new Date()-orderCreatedAt)/60000); elapsed.innerText=mins<1?'Just now': mins<60? mins+' min ago': Math.floor(mins/60)+'h '+(mins%60)+'m ago'; }
+  if(lastStatus && lastStatus!==o.status) playStatusSound(o.status);
+  lastStatus=o.status; renderSteps(o.status);
  });
 }
-
-function trackManually(){
- let input=document.getElementById('orderIdInput').value.trim(); if(!input) return;
- db.collection('orders').orderBy('created_at','desc').limit(100).get().then(s=>{
-  let found=s.docs.find(d=>d.id.toLowerCase().startsWith(input.toLowerCase()) || d.id.slice(0,8).toUpperCase()===input.toUpperCase());
-  if(found) listen(found.id); else {
-   db.collection('orders').doc(input).get().then(d=>{ if(d.exists) listen(input); else notFound.classList.remove('hidden'); });
-  }
- });
+function trackManually(){ let input=document.getElementById('orderIdInput').value.trim(); if(!input) return; if(input.length>15){ listen(input); return; } db.collection('orders').orderBy('created_at','desc').limit(150).get().then(s=>{ let found=s.docs.find(d=>d.id.toLowerCase().startsWith(input.toLowerCase()) || d.id.slice(0,8).toUpperCase()===input.toUpperCase()); if(found) listen(found.id); else db.collection('orders').doc(input).get().then(d=>{ if(d.exists) listen(input); else notFound.classList.remove('hidden'); }); }); }
+async function cancelOrder(){
+ if(!currentId) return;
+ if(!confirm('Cancel this order? Kitchen will be notified.')) return;
+ await db.collection('orders').doc(currentId).update({ status:'canceled', canceled_by:'customer', canceled_at: firebase.firestore.FieldValue.serverTimestamp() });
+ alert('Order canceled');
 }
-
-let p=new URLSearchParams(location.search); let q=p.get('id'); let last=localStorage.getItem('lastOrderId');
-if(q) listen(q); else if(last) listen(last);
+let p=new URLSearchParams(location.search); let q=p.get('id'); let last=localStorage.getItem('lastOrderId')||sessionStorage.getItem('lastOrderId'); if(q) listen(q); else if(last) listen(last);
 </script></body></html>
