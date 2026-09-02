@@ -1,104 +1,39 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - Quick Bite FIXED</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#F5F1E9] p-4 md:p-6"><div class="max-w-6xl mx-auto"><h1 class="text-[28px] font-bold">Quick Bite Admin — FIXED</h1><p class="text-[11px] text-black/50" id="status">Ready</p>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quick Bite REAL Admin</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#F5F1E9] p-4"><div class="max-w-6xl mx-auto">
+<h1 class="text-[28px] font-bold">Quick Bite REAL</h1><button onclick="clearFakeData()" class="bg-red-600 text-white text-[10px] px-3 py-1 rounded-full mt-2">DELETE ALL FAKE DATA</button>
 
-<!-- BANNERS -->
-<div class="bg-[#0A0A0A] text-white p-6 rounded-[24px] mt-6">
-<h2 class="text-[#D4B67A] text-[12px] tracking-[3px] font-bold">HERO BANNERS — MAX 7 (Auto 4s)</h2><p class="text-white/50 text-[11px] mt-1" id="bannerCount">0/7</p>
-<div class="grid md:grid-cols-2 gap-3 mt-4"><input id="bTitle" placeholder="Title e.g 50% OFF" class="bg-white/10 rounded-full px-4 py-3 text-xs outline-none w-full"><input id="bSub" placeholder="Subtitle e.g Mon-Fri" class="bg-white/10 rounded-full px-4 py-3 text-xs outline-none w-full"></div>
-<input id="bannerFile" type="file" accept="image/*" class="mt-3 text-xs text-white"><input id="bannerUrl" placeholder="OR paste image URL (faster)" class="mt-3 w-full bg-white/10 rounded-full px-4 py-3 text-xs outline-none">
-<button onclick="addBanner()" id="bannerBtn" class="mt-3 bg-[#D4B67A] text-black px-6 py-3 rounded-full text-xs font-bold w-full">ADD BANNER</button>
-<div id="bannerList" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+<!-- REAL BANNER -->
+<div class="bg-black text-white p-6 rounded-[24px] mt-6">
+<h2 class="text-[#D4B67A] text-[12px] tracking-[3px] font-bold">REAL HERO BANNERS - Take photo of your food / shop</h2><p id="bannerCount" class="text-white/50 text-[11px] mt-1">0/7</p>
+<input id="bTitle" placeholder="Real Title: e.g TODAY'S SPECIAL" class="w-full bg-white/10 rounded-full px-4 py-3 text-xs mt-3 outline-none">
+<input id="bannerFile" type="file" accept="image/*" capture="environment" class="mt-3 text-xs">
+<button onclick="addBanner()" id="bannerBtn" class="mt-3 bg-[#D4B67A] text-black px-6 py-3 rounded-full text-xs font-bold w-full">UPLOAD REAL BANNER</button>
+<div id="bannerList" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2"></div>
 </div>
 
-<!-- SEED -->
-<div class="mt-6 bg-green-50 border border-green-200 p-6 rounded-[24px]"><h2 class="font-bold text-sm">✅ One-Click Local Menu</h2><p class="text-[11px] mt-1">Rolex (4) + Fries (5) + Juice (3) + Soda (1) = 13 dishes. No upload needed.</p><button onclick="seedMenu()" id="seedBtn" class="bg-[#0A0A0A] text-[#D4B67A] px-6 py-3 rounded-full text-xs font-bold mt-3">SEED FULL MENU NOW</button><p class="text-[10px] mt-2 text-black/50" id="seedStatus"></p></div>
+<!-- REAL MENU -->
+<div class="bg-white p-6 rounded-[24px] mt-6 shadow-sm">
+<h2 class="font-bold">Add REAL Dish - Use Your Phone Camera</h2>
+<input id="name" placeholder="Real Name: e.g Rolex 2 eggs" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="price" type="number" placeholder="Real Price UGX" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<select id="cat" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none"><option>Rolex</option><option>Fries</option><option>Juice</option><option>Soda</option></select>
+<input id="desc" placeholder="Real description" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="file" type="file" accept="image/*" capture="environment" class="mt-4 w-full text-xs">
+<button onclick="addRealDish()" id="ubtn" class="w-full bg-black text-[#D4B67A] py-4 mt-4 rounded-full font-bold text-xs">ADD REAL DISH</button>
+</div>
 
-<!-- ADD DISH FIXED -->
-<div class="mt-6 grid md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-[24px] shadow-sm"><h2 class="font-bold text-sm">Add Single Dish — FIXED (No forever loading)</h2>
-<input id="name" placeholder="Name e.g Rolex Two Eggs" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
-<input id="price" type="number" placeholder="Price UGX e.g 5000" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
-<input id="cat" placeholder="Category: Rolex / Fries / Juice / Soda" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
-<input id="desc" placeholder="Description" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
-<input id="imageUrl" placeholder="Image URL - paste Unsplash link (RECOMMENDED)" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
-<p class="text-[10px] text-center my-2">OR</p>
-<input id="file" type="file" accept="image/*" class="w-full text-xs">
-<button onclick="addDish()" id="ubtn" class="w-full bg-[#0A0A0A] text-[#D4B67A] py-3.5 mt-4 rounded-full font-bold text-xs tracking-widest">ADD DISH</button><p class="text-[10px] mt-2 text-black/40" id="dishStatus"></p>
-</div><div><h2 class="font-bold text-sm">Live Orders (30)</h2><div id="orders" class="mt-3 space-y-2 max-h-[600px] overflow-auto"></div></div></div>
-
-<h2 class="mt-8 font-bold">Menu (<span id="foodCount">0</span>) <button onclick="clearMenu()" class="ml-3 text-[10px] bg-red-500 text-white px-3 py-1 rounded-full">Clear All</button></h2><div id="foods" class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-
+<div class="mt-6 grid md:grid-cols-2 gap-4">
+<div><h3 class="font-bold">Your Real Menu (<span id="foodCount">0</span>)</h3><div id="foods" class="mt-3 grid grid-cols-2 gap-2"></div></div>
+<div><h3 class="font-bold">Live Orders</h3><div id="orders" class="mt-3 space-y-2"></div></div>
+</div>
 </div><script>
-const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
-const storage = firebase.storage();
-function log(t){document.getElementById('status').innerText=t; console.log(t);}
+const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const storage=firebase.storage();
 
-// BANNERS - FIXED with URL option
-async function addBanner(){
- try{
-  let snap=await db.collection('banners').get(); if(snap.size>=7) return alert('Max 7 reached. Delete one.');
-  let url = document.getElementById('bannerUrl').value.trim();
-  let file = document.getElementById('bannerFile').files[0];
-  if(!url &&!file) return alert('Select file OR paste URL');
-  bannerBtn.innerText='Adding...'; bannerBtn.disabled=true;
-  if(!url && file){
-    try{
-      let ref=storage.ref('banners/'+Date.now()+'_'+file.name);
-      await ref.put(file); url=await ref.getDownloadURL();
-    }catch(e){ alert('Storage upload failed, use Image URL instead. Error: '+e.message); bannerBtn.innerText='ADD BANNER'; bannerBtn.disabled=false; return; }
-  }
-  await db.collection('banners').add({url,title:bTitle.value,subtitle:bSub.value,order:snap.size,created_at:firebase.firestore.FieldValue.serverTimestamp()});
-  bannerBtn.innerText='ADD BANNER'; bannerBtn.disabled=false; bTitle.value=''; bSub.value=''; bannerFile.value=''; bannerUrl.value=''; log('Banner added');
- }catch(e){alert(e.message); bannerBtn.innerText='ADD BANNER'; bannerBtn.disabled=false;}
-}
-db.collection('banners').orderBy('order').onSnapshot(s=>{
- bannerCount.innerText=s.size+'/7 used'; bannerList.innerHTML=s.docs.map(d=>{let b=d.data(); return `<div class="bg-white/10 rounded-[16px] p-3 flex gap-3"><img src="${b.url}" class="w-20 h-14 rounded-lg object-cover bg-white/20"><div class="flex-1"><p class="text-xs font-bold truncate">${(b.title||'No title').slice(0,30)}</p><p class="text-[10px] text-white/50 truncate">${(b.subtitle||'').slice(0,30)}</p><div class="flex gap-2 mt-2"><button onclick="editBanner('${d.id}')" class="text-[10px] bg-white text-black px-3 py-1 rounded-full">Edit</button><button onclick="db.collection('banners').doc('${d.id}').delete()" class="text-[10px] bg-red-500 px-3 py-1 rounded-full">Delete</button></div></div></div>`}).join('');
-});
-async function editBanner(id){let doc=await db.collection('banners').doc(id).get(); let b=doc.data(); let nt=prompt('Title',b.title||''); if(nt===null) return; let ns=prompt('Subtitle',b.subtitle||''); if(ns===null) return; await db.collection('banners').doc(id).update({title:nt,subtitle:ns});}
+async function clearFakeData(){ if(!confirm('Delete ALL banners and products with Unsplash?')) return; let b=await db.collection('banners').get(); for(let d of b.docs){ if(d.data().url.includes('unsplash')) await d.ref.delete(); } let p=await db.collection('products').get(); for(let d of p.docs){ if((d.data().image_url||'').includes('unsplash')) await d.ref.delete(); } alert('Fake data deleted. Now add real photos.'); }
 
-// SEED - NO STORAGE
-async function seedMenu(){
- if(!confirm('Add 13 dishes? This uses links, no upload.')) return;
- seedBtn.innerText='Seeding...'; seedBtn.disabled=true; seedStatus.innerText='Starting...';
- const menu=[
-  {name:"Rolex One Egg",price:3500,category:"Rolex",description:"Classic Rolex 1 egg, tomato, cabbage, chapati",image_url:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500"},
-  {name:"Rolex Two Eggs",price:5000,category:"Rolex",description:"Double egg Rolex, more filling",image_url:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500"},
-  {name:"Rolex Special",price:7000,category:"Rolex",description:"2 eggs + minced meat + cheese + avocado",image_url:"https://images.unsplash.com/photo-1604908177225-81e2e13d8a3a?w=500"},
-  {name:"Rolex + Fries",price:8000,category:"Rolex",description:"One egg Rolex + fries",image_url:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500"},
-  {name:"Fries Plain",price:5000,category:"Fries",description:"Crispy hot fries + ketchup",image_url:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500"},
-  {name:"Fries + Rice + Gravy",price:7000,category:"Fries",description:"Half fries half rice with beef gravy",image_url:"https://images.unsplash.com/photo-1604908177453-7462958d0287?w=500"},
-  {name:"Fries with Gravy",price:6000,category:"Fries",description:"Fries topped with rich beef gravy",image_url:"https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=500"},
-  {name:"Fries with Chicken",price:12000,category:"Fries",description:"Fries + grilled chicken piece",image_url:"https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=500"},
-  {name:"Fries with Meat",price:10000,category:"Fries",description:"Fries + fried beef strips",image_url:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500"},
-  {name:"Passion Juice",price:3000,category:"Juice",description:"Fresh passion 500ml cold",image_url:"https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=500"},
-  {name:"Mango Juice",price:3000,category:"Juice",description:"Fresh mango 500ml cold",image_url:"https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=500"},
-  {name:"Pineapple Juice",price:3000,category:"Juice",description:"Fresh pineapple 500ml cold",image_url:"https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?w=500"},
-  {name:"Soda - Coke/Fanta/Sprite",price:2000,category:"Soda",description:"300ml cold - tell us in note",image_url:"https://images.unsplash.com/photo-1624552184280-9e9631bbeee9?w=500"},
- ];
- try{
-  for(let i=0;i<menu.length;i++){ seedStatus.innerText=`Adding ${i+1}/${menu.length}: ${menu[i].name}`; await db.collection('products').add({...menu[i],is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()}); }
-  seedStatus.innerText='Done! 13 dishes added.'; seedBtn.innerText='SEED FULL MENU NOW'; seedBtn.disabled=false; alert('13 dishes added! Check index.html');
- }catch(e){ seedStatus.innerText='Error: '+e.message; alert('Error: '+e.message); seedBtn.disabled=false; seedBtn.innerText='SEED FULL MENU NOW'; }
-}
+async function addBanner(){ let s=await db.collection('banners').get(); if(s.size>=7) return alert('Max 7'); let file=bannerFile.files[0]; if(!file) return alert('Take photo'); bannerBtn.innerText='Uploading...'; let ref=storage.ref('real_banners/'+Date.now()+'.jpg'); await ref.put(file); let url=await ref.getDownloadURL(); await db.collection('banners').add({url,title:bTitle.value,order:s.size,created_at:firebase.firestore.FieldValue.serverTimestamp()}); bannerBtn.innerText='UPLOAD REAL BANNER'; bTitle.value=''; }
+async function addRealDish(){ if(!name.value||!price.value||!file.files[0]) return alert('Name, Price, Photo required'); ubtn.innerText='Uploading...'; let ref=storage.ref('real_foods/'+Date.now()+'.jpg'); await ref.put(file.files[0]); let url=await ref.getDownloadURL(); await db.collection('products').add({name:name.value,price:+price.value,category:cat.value,description:desc.value,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()}); ubtn.innerText='ADD REAL DISH'; alert('Real dish added'); }
 
-// ADD SINGLE DISH - FIXED
-async function addDish(){
- try{
-  if(!name.value ||!price.value) return alert('Name & Price required');
-  ubtn.innerText='Adding...'; ubtn.disabled=true; dishStatus.innerText='Processing...';
-  let url = document.getElementById('imageUrl').value.trim();
-  let file = document.getElementById('file').files[0];
-  if(!url && file){
-    dishStatus.innerText='Uploading image...';
-    try{ let ref=storage.ref('foods/'+Date.now()+'_'+file.name); await ref.put(file); url=await ref.getDownloadURL(); }
-    catch(e){ dishStatus.innerText='Upload failed: '+e.message+' - Use Image URL field.'; ubtn.innerText='ADD DISH'; ubtn.disabled=false; return alert('Upload failed, paste Image URL instead. Go to Unsplash.com copy image link. Error: '+e.message); }
-  }
-  if(!url) url='https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500';
-  await db.collection('products').add({name:name.value,price:+price.value,category:cat.value||'Local',description:desc.value,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()});
-  dishStatus.innerText='Added!'; ubtn.innerText='ADD DISH'; ubtn.disabled=false; name.value=''; price.value=''; desc.value=''; imageUrl.value=''; file.value='';
- }catch(e){ alert(e.message); ubtn.innerText='ADD DISH'; ubtn.disabled=false; dishStatus.innerText='Error: '+e.message; }
-}
-
-async function clearMenu(){ if(!confirm('Delete ALL dishes?')) return; let snap=await db.collection('products').get(); for(let d of snap.docs) await db.collection('products').doc(d.id).delete(); alert('Cleared'); }
-
-db.collection('products').onSnapshot(s=>{ foodCount.innerText=s.size; foods.innerHTML=s.docs.map(d=>{let f=d.data(); return `<div class="bg-white rounded-[16px] overflow-hidden shadow-sm"><img src="${f.image_url}" class="h-28 w-full object-cover"><div class="p-3 text-xs"><b class="block truncate">${f.name}</b>UGX ${f.price} - ${f.category}<br><button onclick="db.collection('products').doc('${d.id}').delete()" class="text-red-500 mt-1">Delete</button> <button onclick="db.collection('products').doc('${d.id}').update({is_available: ${!f.is_available}})" class="ml-2">${f.is_available?'Hide':'Show'}</button></div></div>`}).join(''); });
-db.collection('orders').orderBy('created_at','desc').limit(30).onSnapshot(s=>{ orders.innerHTML=s.docs.map(d=>{let o=d.data(); return `<div class="bg-white p-3 rounded-[12px] text-xs border-l-4 ${o.status=='new'?'border-red-500':'border-green-500'}"><b>${o.customer_name} • ${o.customer_phone}</b><br>${o.area||''} ${o.delivery_fee?'Fee '+o.delivery_fee:''} • ${o.location}<br>${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}<br><b>UGX ${o.total||0}</b> • ${o.status}<br><select onchange="db.collection('orders').doc('${d.id}').update({status:this.value})" class="border rounded-full px-2 py-1 mt-1"><option>${o.status}</option><option>preparing</option><option>on the way</option><option>served</option></select></div>`}).join(''); });
+db.collection('banners').orderBy('order').onSnapshot(s=>{ bannerCount.innerText=s.size+'/7'; bannerList.innerHTML=s.docs.map(d=>`<div class="relative"><img src="${d.data().url}" class="w-full h-24 object-cover rounded-xl"><button onclick="db.collection('banners').doc('${d.id}').delete()" class="absolute top-1 right-1 bg-red-600 text-white text-[8px] px-2 py-1 rounded-full">X</button></div>`).join(''); });
+db.collection('products').onSnapshot(s=>{ foodCount.innerText=s.size; foods.innerHTML=s.docs.map(d=>{let f=d.data(); return `<div class="bg-white rounded-xl overflow-hidden"><img src="${f.image_url}" class="h-24 w-full object-cover"><div class="p-2 text-[11px]"><b>${f.name}</b><br>UGX ${f.price}<br><button onclick="db.collection('products').doc('${d.id}').delete()" class="text-red-500">Delete</button></div></div>`}).join(''); });
+db.collection('orders').orderBy('created_at','desc').limit(20).onSnapshot(s=>{ orders.innerHTML=s.docs.map(d=>{let o=d.data(); return `<div class="bg-white p-3 rounded-xl text-xs"><b>${o.customer_name} ${o.area}</b> UGX ${o.total}<br>${(o.items||[]).map(i=>i.name).join(', ')}<br><select onchange="db.collection('orders').doc('${d.id}').update({status:this.value})"><option>${o.status}</option><option>preparing</option><option>served</option></select></div>`}).join(''); });
 </script></body></html>
