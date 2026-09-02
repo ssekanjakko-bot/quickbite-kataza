@@ -1,3 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track - Quick Bite Kataza</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet"><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><style>body{font-family:'Instrument Sans',sans-serif;background:#0A0A0A}.serif{font-family:'Cormorant Garamond',serif}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,182,122,0.7)}70%{box-shadow:0 0 0 12px rgba(212,182,122,0)}100%{box-shadow:0 0 0 0 rgba(212,182,122,0)}}</style></head><body><div class="max-w-[430px] mx-auto min-h-screen bg-[#F5F1E9] relative overflow-hidden">
 
-<!-- track.html -->
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track Order</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script></head><body class="bg-[#F5F1E9] p-6"><div class="max-w-[430px] mx-auto"><h1 class="serif text-3xl font-bold">Track Order</h1><input id="oid" placeholder="Enter Order ID" class="w-full bg-white rounded-full px-5 py-4 mt-6 text-sm outline-none"><button onclick="track()" class="w-full bg-black text-[#D4B67A] py-4 rounded-full mt-3 font-bold text-xs tracking-widest">TRACK</button><div id="result" class="mt-8"></div></div><script>const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const params=new URLSearchParams(location.search);if(params.get('id')){oid.value=params.get('id');track();}async function track(){if(!oid.value)return alert('Enter ID');let doc=await db.collection('orders').doc(oid.value.trim()).get();if(!doc.exists)return result.innerHTML='<p class="text-red-500">Not found</p>';let o=doc.data();result.innerHTML=`<div class="bg-white rounded-[24px] p-6"><p class="text-xs tracking-widest">STATUS</p><h2 class="text-2xl font-bold mt-2 uppercase ${o.status=='new'?'text-red-500':o.status=='preparing'?'text-orange-500':'text-green-600'}">${o.status}</h2><div class="mt-6 space-y-1 text-sm"><p><b>${o.customer_name}</b> • ${o.area}</p><p>${o.location}</p><p>${o.items.map(i=>i.name+' x'+i.qty).join(', ')}</p><p class="font-bold mt-3">Total UGX ${o.total} (Delivery ${o.delivery_fee})</p></div></div>`;db.collection('orders').doc(oid.value.trim()).onSnapshot(d=>{if(d.exists){let o=d.data();let el=result.querySelector('h2');if(el){el.innerText=o.status;el.className='text-2xl font-bold mt-2 uppercase '+(o.status=='new'?'text-red-500':o.status=='preparing'?'text-orange-500':'text-green-600');}}});}</script></body></html>
+<!-- TOP MAP HEADER -->
+<div class="h-[260px] bg-[#0A0A0A] relative rounded-b-[32px] overflow-hidden">
+<div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(#D4B67A 1px, transparent 1px);background-size:22px 22px"></div>
+<div class="absolute top-5 left-5 right-5 flex justify-between items-center z-10"><a href="index.html" class="w-9 h-9 bg-white rounded-full flex items-center justify-center font-bold">←</a><span class="bg-white/10 backdrop-blur text-[#D4B67A] text-[10px] tracking-[3px] font-bold px-4 py-2 rounded-full border border-white/10">LIVE TRACKING</span><div class="w-9"></div></div>
+<div class="absolute bottom-7 left-7 right-7 z-10">
+<p class="text-white/40 text-[10px] tracking-[3px] font-bold" id="topStatus">SEARCHING ORDER...</p>
+<h1 class="serif text-white text-[32px] leading-[0.9] mt-2 font-bold">Your order<br><span class="text-[#D4B67A] italic font-normal" id="mainHead">is on the way</span></h1>
+<div class="mt-4 flex items-center gap-3"><div id="liveDot" class="w-3 h-3 bg-[#D4B67A] rounded-full pulse"></div><p class="text-white/60 text-[11px]" id="liveText">Connecting to kitchen...</p></div>
+</div>
+</div>
+
+<!-- SEARCH BAR -->
+<div class="-mt-6 mx-5 bg-white rounded-[20px] p-3 shadow-[0_12px_32px_rgba(0,0,0,0.08)] flex gap-2 z-20 relative">
+<input id="orderIdInput" placeholder="Enter Order ID" class="flex-1 bg-[#F5F1E9] rounded-full px-5 py-3.5 text-[12px] outline-none font-bold tracking-widest">
+<button onclick="trackManually()" class="bg-[#0A0A0A] text-[#D4B67A] px-6 rounded-full text-[10px] font-bold tracking-widest">GO</button>
+</div>
+
+<!-- ORDER CARD -->
+<div id="orderBox" class="hidden px-5 mt-6 pb-10 space-y-4">
+<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="cust" class="text-[11px] text-black/50 mt-1"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
+
+<div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white">
+<p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p>
+<div id="steps" class="mt-6"></div>
+</div>
+
+<div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
+
+<div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
+
+<div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call kitchen</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
+</div>
+
+<p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found. Check ID from cart page. Your last order auto-loads if you ordered on this phone.</p>
+
+</div><script>
+const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
+let unsub=null;
+const flow=[{k:'new',t:'Order Received',d:'We got your order',icon
