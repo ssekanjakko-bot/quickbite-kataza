@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track - Quick Bite Kataza</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet"><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><style>body{font-family:'Instrument Sans',sans-serif;background:#0A0A0A}.serif{font-family:'Cormorant Garamond',serif}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,182,122,0.7)}70%{box-shadow:0 0 0 12px rgba(212,182,122,0)}100%{box-shadow:0 0 0 0 rgba(212,182,122,0)}}</style></head><body><div class="max-w-[430px] mx-auto min-h-screen bg-[#F5F1E9] relative overflow-hidden">
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track - Quick Bite Kataza</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet"><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><style>body{font-family:'Instrument Sans',sans-serif;background:#0A0A0A}.serif{font-family:'Cormorant Garamond',serif}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,182,122,0.7)}70%{box-shadow:0 0 0 12px rgba(212,182,122,0)}100%{box-shadow:0 0 0 0 rgba(212,182,122,0)}}</style></head><body><div class="max-w-[430px] mx-auto min-h-screen bg-[#F5F1E9] relative overflow-hidden">
 
 <div class="h-[260px] bg-[#0A0A0A] relative rounded-b-[32px] overflow-hidden">
 <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(#D4B67A 1px, transparent 1px);background-size:22px 22px"></div>
@@ -16,31 +16,104 @@
 </div>
 
 <div id="orderBox" class="hidden px-5 mt-6 pb-10 space-y-4">
-<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><!-- ADDED: DELIVERY CODE --><p id="dcode" class="mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]"></p><p id="cust" class="text-[11px] text-black/50 mt-2"></p><p id="otime" class="text-[10px] text-black/40 mt-1"></p><p id="elapsed" class="text-[10px] font-bold text-[#D4B67A] mt-0.5"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
-
-<div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white">
-<p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p>
-<div id="steps" class="mt-6"></div>
-</div>
-
+<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="dcode" class="mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]"></p><p id="cust" class="text-[11px] text-black/50 mt-2"></p><p id="otime" class="text-[10px] text-black/40 mt-1"></p><p id="elapsed" class="text-[10px] font-bold text-[#D4B67A] mt-0.5"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
+<div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white"><p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p><div id="steps" class="mt-6"></div></div>
 <div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
 <div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
-
-<!-- CANCEL -->
 <button id="cancelBtn" onclick="cancelOrder()" class="hidden w-full bg-white border border-red-200 text-red-500 py-3.5 rounded-full text-[11px] font-bold tracking-widest">CANCEL ORDER ✕</button>
-
 <div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call kitchen</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
 </div>
+
+<!-- RECEIPT BOX AFTER DELIVERED -->
+<div id="receiptBox" class="hidden px-5 mt-6 pb-10 space-y-4">
+<div id="receiptCapture" class="bg-white rounded-[28px] p-6 text-center border border-[#D4B67A]/20">
+<div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#D4B67A] to-[#8C6B2E] rounded-full flex items-center justify-center text-white text-[32px] shadow-lg">✓</div>
+<h2 class="serif text-[26px] font-bold mt-4 leading-[0.9]">Delivered!<br><span class="text-[#D4B67A] italic font-normal">Enjoy your feast</span></h2>
+<p id="receiptTime" class="text-[11px] text-black/40 mt-2"></p>
+<div class="mt-3 flex justify-center gap-2"><span id="rCode" class="bg-[#E8F5E9] border border-green-200 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold"></span><span id="rId" class="bg-[#F5F1E9] px-3 py-1 rounded-full text-[10px] font-bold tracking-widest"></span></div>
+<div class="mt-4 border-t border-dashed pt-4 space-y-2 text-left" id="receiptItems"></div>
+<div class="border-t border-black/10 mt-4 pt-4 space-y-1 text-[11px] text-left">
+<div class="flex justify-between text-black/50"><span>Subtotal</span><span id="rSub"></span></div>
+<div class="flex justify-between text-black/50"><span>Delivery Fee</span><span id="rDel"></span></div>
+<div class="flex justify-between font-bold text-[14px] pt-2 border-t"><span>Total Paid</span><span id="rTotal" class="text-[#8C6B2E]"></span></div>
+</div>
+<p class="text-[9px] text-black/30 mt-4 text-center tracking-[2px]">THANK YOU FOR ORDERING FROM QUICK BITE KATAZA</p>
+<p class="text-[8px] text-black/20 mt-1 text-center" id="receiptFooter">Verified delivery • Keep this receipt</p>
+</div>
+
+<div class="grid grid-cols-3 gap-2">
+<button onclick="downloadReceipt()" class="bg-[#0A0A0A] text-[#D4B67A] py-3 rounded-full font-bold text-[10px] tracking-widest">DOWNLOAD ↓</button>
+<button onclick="window.print()" class="bg-white border py-3 rounded-full font-bold text-[10px] tracking-widest">PRINT</button>
+<button onclick="deleteCurrentReceipt()" class="bg-white border border-red-200 text-red-500 py-3 rounded-full font-bold text-[10px] tracking-widest">DELETE 🗑️</button>
+</div>
+
+<div class="flex gap-3 mt-3">
+<a href="index.html" class="flex-1 bg-[#D4B67A] text-black py-4 rounded-full font-bold text-[11px] text-center tracking-widest">ORDER AGAIN →</a>
+<button onclick="clearReceipt()" class="flex-1 bg-white border py-4 rounded-full font-bold text-[11px] tracking-widest">NEW TRACKING</button>
+</div>
+
+<div class="mt-6"><p class="font-bold text-[10px] tracking-[3px] text-black/30">PAST RECEIPTS</p><div id="historyBox" class="mt-3 space-y-2"></div></div>
+</div>
+
 <p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found.</p>
 </div><script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
-let unsub=null, lastStatus=null, currentId=null, orderCreatedAt=null;
+let unsub=null, lastStatus=null, currentId=null, orderCreatedAt=null, currentReceiptId=null;
 const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy!',icon:'✓'}];
 const heads={new:'is confirmed',preparing:'is being cooked','on the way':'is on the way',served:'has arrived',canceled:'was canceled'};
 let audioCtx=null; function getAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
 function beep(f,d,v=0.3,dl=0){ try{ setTimeout(()=>{ let ctx=getAudio(); let o=ctx.createOscillator(); let g=ctx.createGain(); o.frequency.value=f; o.connect(g); g.connect(ctx.destination); g.gain.value=v; o.start(); setTimeout(()=>o.stop(),d); },dl);}catch(e){} }
 function playStatusSound(s){ if(s==='preparing'){beep(600,180); beep(900,220,0.3,200);} else if(s==='on the way'){beep(500,180); beep(700,180,0.3,150); beep(950,200,0.35,320);} else if(s==='served'){ [523,659,783,1046].forEach((f,i)=>beep(f,280,0.3,i*130));} else if(s==='canceled'){beep(300,400,0.4);} if(navigator.vibrate) navigator.vibrate([200,80,200]); }
 document.addEventListener('click', ()=>{ try{getAudio();}catch(e){} }, {once:true});
+
+function saveToHistory(o,id){
+  let hist=JSON.parse(localStorage.getItem('qb_receipts')||'[]');
+  if(hist.find(h=>h.id===id)) return;
+  hist.unshift({id:id,code:o.delivery_code||'',total:o.total||0,subtotal:(o.total-(o.delivery_fee||0)),delivery:o.delivery_fee||0,items:o.items||[],served_at:new Date().toISOString(),customer:o.customer_name||''});
+  localStorage.setItem('qb_receipts', JSON.stringify(hist.slice(0,20)));
+  renderHistory();
+}
+function renderHistory(){
+  let hist=JSON.parse(localStorage.getItem('qb_receipts')||'[]');
+  let box=document.getElementById('historyBox');
+  if(!box) return;
+  if(!hist.length){ box.innerHTML='<p class="text-[11px] text-black/20 text-center py-4">No receipts yet</p>'; return; }
+  box.innerHTML=hist.map(h=>`<div class="bg-white rounded-[16px] p-3 flex justify-between items-center border"><div onclick="listen('${h.id}')" class="flex-1 cursor-pointer"><p class="font-bold text-[11px]">#${h.id.slice(0,6).toUpperCase()} • CODE ${h.code}</p><p class="text-[10px] text-black/40">${new Date(h.served_at).toLocaleDateString()} • UGX ${h.total.toLocaleString()}</p></div><button onclick="deleteReceiptById('${h.id}')" class="w-7 h-7 bg-red-50 text-red-500 rounded-full text-[12px]">✕</button></div>`).join('');
+}
+function clearReceipt(){
+  document.getElementById('receiptBox').classList.add('hidden');
+  document.getElementById('orderBox').classList.add('hidden');
+  document.getElementById('topStatus').innerText='READY';
+  document.getElementById('mainHead').innerText='waiting for order';
+  localStorage.removeItem('lastOrderId'); sessionStorage.removeItem('lastOrderId'); currentId=null; currentReceiptId=null;
+  if(unsub) unsub();
+  renderHistory();
+}
+function downloadReceipt(){
+  let el=document.getElementById('receiptCapture');
+  html2canvas(el,{backgroundColor:'#ffffff',scale:2}).then(canvas=>{
+    let link=document.createElement('a');
+    link.download=`Kataza-Receipt-${(currentReceiptId||'order').slice(0,6)}.png`;
+    link.href=canvas.toDataURL();
+    link.click();
+  });
+}
+function deleteCurrentReceipt(){
+  if(!currentReceiptId) return;
+  if(!confirm('Delete this receipt from your phone?')) return;
+  let hist=JSON.parse(localStorage.getItem('qb_receipts')||'[]');
+  hist=hist.filter(h=>h.id!==currentReceiptId);
+  localStorage.setItem('qb_receipts', JSON.stringify(hist));
+  clearReceipt();
+}
+function deleteReceiptById(id){
+  if(!confirm('Delete this receipt?')) return;
+  let hist=JSON.parse(localStorage.getItem('qb_receipts')||'[]');
+  hist=hist.filter(h=>h.id!==id);
+  localStorage.setItem('qb_receipts', JSON.stringify(hist));
+  renderHistory();
+  if(currentReceiptId===id) clearReceipt();
+}
 function renderSteps(current){
  let idx=flow.findIndex(f=>f.k===current);
  if(current==='canceled'){ steps.innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center"><p class="text-red-400 font-bold text-[13px]">Order Canceled</p><p class="text-[11px] text-white/40 mt-1">By customer</p></div>`; topStatus.innerText='CANCELED'; mainHead.innerText='was canceled'; liveDot.className='w-3 h-3 bg-red-500 rounded-full'; liveText.innerText='Canceled'; cancelBtn.classList.add('hidden'); return; }
@@ -48,33 +121,40 @@ function renderSteps(current){
  steps.innerHTML=flow.map((f,i)=>{ let active=i<=idx, isNow=f.k===current; return `<div class="flex gap-4 relative"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold z-10 ${active? 'bg-[#D4B67A] text-black'+(isNow?' pulse':'') : 'bg-white/10 text-white/30'}">${f.icon}</div>${i<3?`<div class="w-[2px] h-10 mt-2 ${i<idx?'bg-[#D4B67A]':'bg-white/10'}"></div>`:''}</div><div class="pb-10"><p class="font-bold text-[13px] ${active?'text-white': 'text-white/30'}">${f.t} ${isNow?'<span class="ml-2 text-[9px] bg-[#D4B67A] text-black px-2 py-0.5 rounded-full">NOW</span>':''}</p><p class="text-[11px] ${active?'text-white/60':'text-white/20'} mt-1">${f.d}</p></div></div>`; }).join('');
  topStatus.innerText=(current||'NEW').toUpperCase(); mainHead.innerText=heads[current]||'is confirmed'; liveText.innerText=flow.find(f=>f.k===current)?.d||'Live';
 }
+function showReceipt(o,id){
+  currentReceiptId=id;
+  document.getElementById('orderBox').classList.add('hidden');
+  document.getElementById('receiptBox').classList.remove('hidden');
+  document.getElementById('topStatus').innerText='DELIVERED';
+  document.getElementById('mainHead').innerText='receipt ready';
+  document.getElementById('liveDot').className='w-3 h-3 bg-green-500 rounded-full';
+  document.getElementById('liveText').innerText='Enjoy your meal • Receipt saved';
+  document.getElementById('receiptTime').innerText='Delivered on '+new Date().toLocaleString()+' • '+(o.customer_name||'');
+  document.getElementById('rCode').innerText='✓ CODE VERIFIED '+(o.delivery_code||'');
+  document.getElementById('rId').innerText='#'+id.slice(0,8).toUpperCase();
+  document.getElementById('receiptItems').innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between text-[12px]"><span>${i.name} <span class="text-black/40">x${i.qty}</span></span><span class="font-bold">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
+  document.getElementById('rSub').innerText='UGX '+((o.total||0)-(o.delivery_fee||0)).toLocaleString();
+  document.getElementById('rDel').innerText='UGX '+(o.delivery_fee||0).toLocaleString();
+  document.getElementById('rTotal').innerText='UGX '+(o.total||0).toLocaleString();
+  saveToHistory(o,id);
+}
 function listen(id){
  if(unsub) unsub(); id=id.trim(); currentId=id;
  document.getElementById('orderIdInput').value=id.slice(0,8).toUpperCase(); localStorage.setItem('lastOrderId', id); sessionStorage.setItem('lastOrderId', id);
- orderBox.classList.remove('hidden'); notFound.classList.add('hidden'); oid.innerText=id.slice(0,8).toUpperCase();
+ orderBox.classList.remove('hidden'); receiptBox.classList.add('hidden'); notFound.classList.add('hidden'); oid.innerText=id.slice(0,8).toUpperCase();
  unsub=db.collection('orders').doc(id).onSnapshot(doc=>{
   if(!doc.exists){ orderBox.classList.add('hidden'); notFound.classList.remove('hidden'); return; }
-  let o=doc.data(); if(o.created_at) orderCreatedAt=o.created_at.toDate();
+  let o=doc.data();
+  if(o.status==='served'){ showReceipt(o, doc.id); return; }
+  if(o.created_at) orderCreatedAt=o.created_at.toDate();
   cust.innerText=(o.customer_name||'')+' • '+(o.customer_phone||''); area.innerText=(o.area||'')+' • '+(o.location||''); total.innerText='UGX '+(o.total||0).toLocaleString();
   items.innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between items-center bg-[#F5F1E9] rounded-full px-4 py-2.5"><span class="text-[11px] font-bold">${i.name} x ${i.qty}</span><span class="text-[11px]">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
   if(o.admin_message){ adminMsgBox.classList.remove('hidden'); adminMsg.innerText=o.admin_message; } else adminMsgBox.classList.add('hidden');
-  // ADDED: show delivery code
   let dc = document.getElementById('dcode');
-  if(o.delivery_code){
-    if(o.status==='served'){
-      dc.className='mt-2 inline-flex bg-[#E8F5E9] text-green-700 border border-green-200 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[1px]';
-      dc.innerText='✓ CODE VERIFIED '+o.delivery_code;
-    }else{
-      dc.className='mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]';
-      dc.innerText='CODE: '+o.delivery_code+' • Tell rider';
-    }
-  }
-  // time
+  if(o.delivery_code){ dc.className='mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]'; dc.innerText='CODE: '+o.delivery_code+' • Tell rider'; }
   if(orderCreatedAt){ otime.innerText='Ordered at '+orderCreatedAt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' • '+orderCreatedAt.toLocaleDateString(); let mins=Math.floor((new Date()-orderCreatedAt)/60000); elapsed.innerText=mins<1?'Just now': mins<60? mins+' min ago': Math.floor(mins/60)+'h '+(mins%60)+'m ago'; }
   if(lastStatus && lastStatus!==o.status) playStatusSound(o.status);
   lastStatus=o.status; renderSteps(o.status);
-  // ADDED: epic served
-  if(o.status==='served' && lastStatus==='served'){ /* confetti once */ }
  });
 }
 function trackManually(){ let input=document.getElementById('orderIdInput').value.trim(); if(!input) return; if(input.length>15){ listen(input); return; } db.collection('orders').orderBy('created_at','desc').limit(150).get().then(s=>{ let found=s.docs.find(d=>d.id.toLowerCase().startsWith(input.toLowerCase()) || d.id.slice(0,8).toUpperCase()===input.toUpperCase()); if(found) listen(found.id); else db.collection('orders').doc(input).get().then(d=>{ if(d.exists) listen(input); else notFound.classList.remove('hidden'); }); }); }
@@ -84,5 +164,5 @@ async function cancelOrder(){
  await db.collection('orders').doc(currentId).update({ status:'canceled', canceled_by:'customer', canceled_at: firebase.firestore.FieldValue.serverTimestamp() });
  alert('Order canceled');
 }
-let p=new URLSearchParams(location.search); let q=p.get('id'); let last=localStorage.getItem('lastOrderId')||sessionStorage.getItem('lastOrderId'); if(q) listen(q); else if(last) listen(last);
+let p=new URLSearchParams(location.search); let q=p.get('id'); let last=localStorage.getItem('lastOrderId')||sessionStorage.getItem('lastOrderId'); if(q) listen(q); else if(last) listen(last); else renderHistory();
 </script></body></html>
