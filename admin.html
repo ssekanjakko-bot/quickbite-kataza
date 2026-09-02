@@ -18,20 +18,21 @@
 </div>
 </div>
 
-<div class="bg-white rounded-[24px] p-5"><h2 class="font-bold">Orders</h2>
+<div class="bg-white rounded-[24px] p-5"><h2 class="font-bold">Orders - <span id="liveCount" class="text-[#D4B67A]">LIVE</span></h2>
 <div class="flex gap-2 mt-4 overflow-x-auto" id="tabs">
-<button onclick="setFilter('all')" data-f="all" class="tab-active bg-black text-[#D4B67A] px-4 py-2 rounded-full text-[11px] font-bold">ALL</button>
-<button onclick="setFilter('live')" data-f="live" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">LIVE</button>
+<button onclick="setFilter('live')" data-f="live" class="tab-active bg-black text-[#D4B67A] px-4 py-2 rounded-full text-[11px] font-bold">LIVE (<span id="cLive">0</span>)</button>
+<button onclick="setFilter('all')" data-f="all" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">ALL</button>
 <button onclick="setFilter('new')" data-f="new" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">NEW</button>
 <button onclick="setFilter('preparing')" data-f="preparing" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">PREPARING</button>
-<button onclick="setFilter('served')" data-f="served" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">COMPLETED</button>
-<button onclick="setFilter('canceled')" data-f="canceled" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">CANCELED</button>
+<button onclick="setFilter('served')" data-f="served" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">COMPLETED (<span id="cDone">0</span>)</button>
+<button onclick="setFilter('canceled')" data-f="canceled" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">CANCELED (<span id="cCancel">0</span>)</button>
 </div><div id="orders" class="mt-4 space-y-3"></div></div>
 </div></div>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const storage=firebase.storage();
-let allOrders=[], filter='all';
+let allOrders=[], filter='live';
+let prevIds = new Set();
 
 async function addBanner(){ let snap=await db.collection('banners').get(); if(snap.size>=7) return alert('Max 7'); let f=document.getElementById('bannerFile').files[0]; if(!f) return alert('Select image'); bannerBtn.innerText='Uploading...'; let ref=storage.ref('banners/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('banners').add({url,title:bTitle.value,order:snap.size,created_at:firebase.firestore.FieldValue.serverTimestamp()}); bannerBtn.innerText='ADD BANNER'; }
 
@@ -42,9 +43,8 @@ async function addDish(){
  let d=document.getElementById('dishDesc').value.trim();
  let fileInput=document.getElementById('dishFile');
  let f=fileInput.files[0];
- console.log({n,p,f});
- if(!n||!p||!f){ alert('Name, Price, Photo required - Name:'+n+' Price:'+p+' File:'+(f?f.name:'none')); return; }
- ubtn.innerText='Uploading...'; ubtn.disabled=true; dishMsg.innerText='Uploading to Firebase...';
+ if(!n||!p||!f){ alert('Name, Price, Photo required'); return; }
+ ubtn.innerText='Uploading...'; ubtn.disabled=true; dishMsg.innerText='Uploading...';
  try{ let ref=storage.ref('foods/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('products').add({name:n,price:+p,category:c,description:d,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()}); dishMsg.innerText='Added!'; document.getElementById('dishName').value=''; document.getElementById('dishPrice').value=''; fileInput.value=''; }catch(e){ alert('Upload failed: '+e.message); dishMsg.innerText=e.message; } ubtn.innerText='ADD DISH'; ubtn.disabled=false;
 }
 
@@ -52,10 +52,88 @@ function setFilter(f){ filter=f; document.querySelectorAll('#tabs button').forEa
 
 db.collection('banners').orderBy('order').onSnapshot(s=>{ bannerCount.innerText=s.size+'/7'; bannerList.innerHTML=s.docs.map(doc=>`<div class="flex gap-2 items-center bg-white/10 p-2 rounded-xl"><img src="${doc.data().url}" class="w-14 h-10 rounded-lg object-cover"><button onclick="db.collection('banners').doc('${doc.id}').delete()" class="bg-red-600 text-white text-[9px] px-2 py-1 rounded-full">DEL</button></div>`).join(''); });
 db.collection('products').onSnapshot(s=>{ foodCount.innerText=s.size; foods.innerHTML=s.docs.map(doc=>{let f=doc.data(); return `<div class="border rounded-xl overflow-hidden"><img src="${f.image_url}" class="h-20 w-full object-cover"><div class="p-2 text-[10px]"><b>${f.name}</b><br>UGX ${f.price}<br><button onclick="db.collection('products').doc('${doc.id}').delete()" class="bg-red-500 text-white px-2 py-1 rounded-full mt-1">Del</button></div></div>`}).join(''); });
-db.collection('orders').orderBy('created_at','desc').limit(100).onSnapshot(s=>{ allOrders=s.docs.map(d=>({id:d.id,...d.data()})); renderOrders(); });
+
+// --- ORDERS WITH TIME + CANCEL DETECTION ---
+db.collection('orders').orderBy('created_at','desc').limit(100).onSnapshot(s=>{
+ let newList=s.docs.map(d=>({id:d.id,...d.data()}));
+ // detect new customer canceled
+ newList.forEach(o=>{
+   if(prevIds.has(o.id)){
+     let old = allOrders.find(x=>x.id===o.id);
+     if(old && old.status!==o.status && o.status==='canceled'){
+       if(o.canceled_by==='customer'){
+         playAlert('Customer CANCELED: '+(o.customer_name||o.id.slice(0,6)));
+       } else {
+         playAlert('Order canceled');
+       }
+     }
+   }
+   if(!prevIds.has(o.id) && o.status==='new'){
+     playAlert('New order! '+ (o.customer_name||''));
+   }
+ });
+ prevIds = new Set(newList.map(o=>o.id));
+ allOrders=newList; renderOrders();
+});
+
+function playAlert(msg){
+ try{
+   let ctx=new (window.AudioContext||window.webkitAudioContext)();
+   let o=ctx.createOscillator(); let g=ctx.createGain(); o.frequency.value=900; o.connect(g); g.connect(ctx.destination); g.gain.value=0.4; o.start(); setTimeout(()=>o.stop(),400);
+   if(navigator.vibrate) navigator.vibrate([300,100,300]);
+   console.log('%c '+msg, 'background:#000;color:#D4B67A;padding:4px 8px');
+ }catch(e){}
+}
+
+function timeAgo(ts){
+ if(!ts) return '';
+ let d = ts.toDate? ts.toDate() : new Date(ts);
+ let mins = Math.floor((new Date()-d)/60000);
+ if(mins<1) return 'Just now • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+ if(mins<60) return mins+' min ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+ return Math.floor(mins/60)+'h '+ (mins%60)+'m ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
 function renderOrders(){
- let list=allOrders; if(filter==='live') list=list.filter(o=>['new','preparing','on the way'].includes(o.status)); else if(filter!=='all') list=list.filter(o=>o.status===filter);
+ let list=allOrders;
+ let cLive = allOrders.filter(o=>['new','preparing','on the way'].includes(o.status)).length;
+ let cDone = allOrders.filter(o=>o.status==='served').length;
+ let cCancel = allOrders.filter(o=>o.status==='canceled').length;
+ document.getElementById('cLive').innerText=cLive;
+ document.getElementById('cDone').innerText=cDone;
+ document.getElementById('cCancel').innerText=cCancel;
+ document.getElementById('liveCount').innerText=cLive+' LIVE';
+
+ if(filter==='live') list=list.filter(o=>['new','preparing','on the way'].includes(o.status));
+ else if(filter!=='all') list=list.filter(o=>o.status===filter);
+
  if(!list.length){ orders.innerHTML='<p class="text-center py-10 text-black/30 text-xs">No '+filter+' orders</p>'; return; }
- orders.innerHTML=list.map(o=>`<div class="bg-[#F5F1E9] p-3 rounded-xl border-l-4 ${o.status==='new'?'border-red-500':o.status==='canceled'?'border-gray-400':'border-green-500'}"><div class="flex justify-between"><b class="text-xs">${o.customer_name||'No name'} ${o.customer_phone||''}</b><span class="text-[10px] bg-white px-2 py-1 rounded-full">${o.status}</span></div><p class="text-[11px]">${o.area||''} ${o.location||''}</p><p class="text-[11px] font-bold">${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}</p><p class="text-xs font-bold mt-1">UGX ${(o.total||0).toLocaleString()}</p><div class="flex gap-2 mt-2 flex-wrap"><button onclick="db.collection('orders').doc('${o.id}').update({status:'preparing'})" class="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px]">Preparing</button><button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way'})" class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px]">On Way</button><button onclick="db.collection('orders').doc('${o.id}').update({status:'served'})" class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px]">Done</button><button onclick="db.collection('orders').doc('${o.id}').update({status:'canceled'})" class="bg-black text-white px-3 py-1 rounded-full text-[10px]">Cancel</button></div></div>`).join('');
+ orders.innerHTML=list.map(o=>{
+   let tStr = timeAgo(o.created_at);
+   let cancelBadge = '';
+   if(o.status==='canceled'){
+     if(o.canceled_by==='customer'){
+       cancelBadge=`<span class="bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded-full text-[9px] font-bold animate-pulse">⚠ CANCELED BY CUSTOMER</span>`;
+     } else {
+       cancelBadge=`<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-[9px]">Canceled by Admin</span>`;
+     }
+   }
+   let servedTime = o.served_at? `<span class="text-[10px] text-green-600">✓ Done at ${o.served_at.toDate? o.served_at.toDate().toLocaleTimeString():''}</span>` : '';
+   let canceledTime = o.canceled_at? `<span class="text-[10px] text-red-500">✕ Canceled at ${o.canceled_at.toDate? o.canceled_at.toDate().toLocaleTimeString():''}</span>` : '';
+   return `<div class="bg-[#F5F1E9] p-3 rounded-xl border-l-4 ${o.status==='new'?'border-red-500':o.status==='canceled'?'border-red-400 bg-red-50':o.status==='served'?'border-green-500 bg-green-50/50':'border-yellow-500'}">
+<div class="flex justify-between items-start"><b class="text-xs">${o.customer_name||'No name'} ${o.customer_phone||''}</b><div class="flex flex-col items-end gap-1"><span class="text-[10px] bg-white px-2 py-1 rounded-full font-bold uppercase">${o.status}</span>${cancelBadge}</div></div>
+<p class="text-[11px] text-black/60 mt-1">🕒 ${tStr}</p>
+${servedTime}${canceledTime}
+<p class="text-[11px] mt-1">${o.area||''} ${o.location||''}</p>
+<p class="text-[11px] font-bold">${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}</p>
+<p class="text-xs font-bold mt-1">UGX ${(o.total||0).toLocaleString()}</p>
+<div class="flex gap-2 mt-2 flex-wrap">
+${o.status!=='canceled'&&o.status!=='served'?`
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'preparing'})" class="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px]">Preparing</button>
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way'})" class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px]">On Way</button>
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'served', served_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px]">Done</button>
+<button onclick="if(confirm('Cancel order?')) db.collection('orders').doc('${o.id}').update({status:'canceled', canceled_by:'admin', canceled_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-black text-white px-3 py-1 rounded-full text-[10px]">Cancel</button>
+`: o.status==='served'?`<span class="text-[10px] text-green-600 font-bold">✓ MOVED TO COMPLETED</span>`:`<span class="text-[10px] text-red-500 font-bold">${o.canceled_by==='customer'?'Customer canceled this':'Canceled'}</span>`}
+</div></div>`}).join('');
 }
 </script></body></html>
