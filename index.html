@@ -2,77 +2,80 @@
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quick Bite Kataza</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-<style>
-body{font-family:'Instrument Sans',sans-serif;background:#F5F1E9}
-.serif{font-family:'Cormorant Garamond',serif}
-.hero{background:linear-gradient(0deg,rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.4) 60%), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800');background-size:cover;background-position:center}
-</style>
+<style>body{font-family:'Instrument Sans',sans-serif;background:#F5F1E9}.serif{font-family:'Cormorant Garamond',serif}.hero{background-size:cover;background-position:center}</style>
 </head><body>
 <div class="max-w-[430px] mx-auto bg-[#F5F1E9] min-h-screen relative">
 
-<!-- HERO - This is what was missing -->
-<div class="hero h-[280px] p-7 flex flex-col justify-end">
+<div id="hero" class="hero h-[340px] p-7 flex flex-col justify-end" style="background:linear-gradient(0deg,rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.25) 65%), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800') center/cover">
+<div class="absolute top-6 right-6 bg-black/40 backdrop-blur border border-white/10 text-white text-[9px] px-3 py-1.5 rounded-full tracking-[2px]">DELIVERY 20-35 MINS</div>
 <p class="text-[#D4B67A] text-[10px] tracking-[4px]">KATAZA • KAMPALA</p>
-<h1 class="serif text-[#F5F1E9] text-[42px] leading-[0.9] mt-3 font-bold">Quick Bite<br><span class="text-[#D4B67A] italic font-normal">Kataza</span></h1>
-<p class="text-white/60 text-[12px] mt-4 max-w-[200px]">Wood-fired grill. Local ingredients. Served at your table in 20 mins.</p>
-<div class="mt-5 flex gap-2"><span class="bg-white/10 backdrop-blur text-white/80 text-[10px] px-3 py-1.5 rounded-full border border-white/10">OPEN • 10AM - 11PM</span><span class="bg-[#D4B67A] text-black text-[10px] px-3 py-1.5 rounded-full font-bold">4.9 ★ (127)</span></div>
+<h1 class="serif text-[#F5F1E9] text-[44px] leading-[0.9] mt-3 font-bold">Quick Bite<br><span class="text-[#D4B67A] italic font-normal">Kataza</span></h1>
+<p class="text-white/60 text-[12px] mt-4 max-w-[230px] leading-relaxed">Wood-fired grill. Local ingredients. Delivered to your hostel.</p>
+<div class="mt-5 flex gap-2"><span class="bg-white/10 backdrop-blur text-white/80 text-[10px] px-3 py-1.5 rounded-full border border-white/10">OPEN 10AM-11PM</span><span class="bg-[#D4B67A] text-black text-[10px] px-3 py-1.5 rounded-full font-bold">4.9 ★</span></div>
 </div>
 
-<!-- FILTERS -->
-<div class="sticky top-0 bg-[#F5F1E9]/90 backdrop-blur z-10 px-5 py-4">
-<div id="cats" class="flex gap-2 overflow-x-auto scrollbar-hide"></div>
-</div>
-
-<!-- MENU -->
+<div class="sticky top-0 bg-[#F5F1E9]/90 backdrop-blur z-10 px-5 py-4"><div id="cats" class="flex gap-2 overflow-x-auto"></div></div>
 <div id="menu" class="px-5 pb-28 space-y-5"></div>
 
-<!-- CART FLOAT -->
 <div id="cartBtn" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-[#0A0A0A] rounded-full p-2 pl-6 pr-2 flex justify-between items-center shadow-[0_20px_40px_rgba(0,0,0,0.3)] z-20">
-<div class="flex items-center gap-3"><div class="w-10 h-10 bg-[#D4B67A] rounded-full flex items-center justify-center text-black font-bold text-sm" id="cartCount">2</div><div><p class="text-white text-[12px] font-medium leading-none" id="cartText">2 dishes</p><p class="text-[#D4B67A] text-[11px]" id="cartPrice">UGX 24,000</p></div></div>
+<div class="flex items-center gap-3"><div class="w-10 h-10 bg-[#D4B67A] rounded-full flex items-center justify-center text-black font-bold text-sm" id="cartCount">0</div><div><p class="text-white text-[12px] font-medium leading-none" id="cartText">0 dishes</p><p class="text-[#D4B67A] text-[11px]" id="cartPrice">UGX 0</p></div></div>
 <button onclick="openCart()" class="bg-white text-black px-6 py-3 rounded-full text-[11px] font-bold tracking-widest">CART →</button>
 </div>
 
-<!-- CART PAGE - Premium -->
-<div id="cartPage" class="hidden fixed inset-0 bg-[#F5F1E9] z-50 overflow-y-auto"><div class="max-w-[430px] mx-auto p-6"><div class="flex justify-between items-center"><button onclick="closeCart()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center">✕</button><p class="serif text-[22px]">Your Order</p><div class="w-10"></div></div><div id="cartList" class="mt-8 space-y-4"></div><div class="mt-8 bg-white rounded-[24px] p-6"><input id="cname" placeholder="Full name" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3"><input id="cphone" placeholder="07XX XXX XXX" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3"><input id="cloc" placeholder="Table number or Hostel & Room" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3"><textarea id="note" placeholder="Special instructions?" class="w-full bg-[#F5F1E9] rounded-[20px] px-5 py-4 text-[13px] outline-none mt-3 h-20"></textarea></div><div class="mt-6 px-2 space-y-2 text-[13px]"><div class="flex justify-between text-black/50"><span>Subtotal</span><span id="sub">0</span></div><div class="flex justify-between text-black/50"><span>Delivery</span><span>UGX 2,000</span></div><div class="flex justify-between font-bold text-[16px] pt-3 border-t border-black/10"><span>Total</span><span id="total" class="text-[#0A0A0A]">0</span></div></div><button onclick="placeOrder()" id="orderBtn" class="w-full mt-6 bg-[#0A0A0A] text-[#D4B67A] py-5 rounded-full font-bold tracking-[3px] text-[12px]">CONFIRM ORDER</button><p class="text-center text-[10px] text-black/40 mt-3 tracking-widest">SECURE • FAST • FRESH</p></div></div>
+<div id="cartPage" class="hidden fixed inset-0 bg-[#F5F1E9] z-50 overflow-y-auto"><div class="max-w-[430px] mx-auto p-6">
+<div class="flex justify-between items-center"><button onclick="closeCart()" class="w-10 h-10 bg-white rounded-full">✕</button><p class="serif text-[22px]">Your Order</p><div class="w-10"></div></div>
+<div id="cartList" class="mt-8 space-y-4"></div>
+<div class="mt-8 bg-white rounded-[24px] p-6">
+<input id="cname" placeholder="Full name" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none">
+<input id="cphone" placeholder="07XX XXX XXX" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3">
+<select id="cloc" onchange="updateDelivery()" class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3">
+<option value="">Select delivery area</option>
+<option value="Kataza">Kataza — UGX 500</option>
+<option value="Kiswa">Kiswa / Kiswaa — UGX 1,000</option>
+<option value="Mbuya">Mbuya — UGX 2,000</option>
+<option value="Kinawataka">Kinawataka — UGX 2,000</option>
+<option value="Mutungo">Mutungo — UGX 2,500</option>
+<option value="Luzira">Luzira — UGX 3,000</option>
+<option value="Town">Town / Nakawa — UGX 3,000</option>
+</select>
+<input id="clocDetail" placeholder="Hostel name, Room / Table No." class="w-full bg-[#F5F1E9] rounded-full px-5 py-4 text-[13px] outline-none mt-3">
+<textarea id="note" placeholder="Note: e.g No onions" class="w-full bg-[#F5F1E9] rounded-[20px] px-5 py-4 text-[13px] outline-none mt-3 h-20"></textarea>
+</div>
+<div class="mt-6 px-2 space-y-2 text-[13px]"><div class="flex justify-between text-black/50"><span>Subtotal</span><span id="sub">UGX 0</span></div><div class="flex justify-between text-black/50"><span>Delivery (<span id="areaName">Kataza</span>)</span><span id="deliveryLabel">UGX 500</span></div><div class="flex justify-between font-bold text-[16px] pt-3 border-t border-black/10"><span>Total</span><span id="total">UGX 0</span></div></div>
+<button onclick="placeOrder()" id="orderBtn" class="w-full mt-6 bg-[#0A0A0A] text-[#D4B67A] py-5 rounded-full font-bold tracking-[3px] text-[12px]">CONFIRM ORDER</button>
+</div></div>
 
 </div>
 <script>
-const firebaseConfig = { apiKey: "AIzaSy...", authDomain: "...", projectId: "...", storageBucket: "...", appId: "..." };
+const firebaseConfig = { apiKey: "REPLACE", authDomain: "REPLACE", projectId: "REPLACE", storageBucket: "REPLACE", appId: "REPLACE" };
 firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
 
-// FALLBACK premium dishes if Firebase empty - so never blank
+const deliveryFees = { Kataza:500, Kiswa:1000, Kiswaa:1000, Mbuya:2000, Kinawataka:2000, Mutungo:2500, Luzira:3000, Town:3000 };
+let currentDelivery=500, foods=[], cart=[], activeCat='All';
+
 const demoFoods = [
-{name:"Grilled Chicken Full", price:28000, category:"Grill", description:"Half chicken, charcoal grilled 45min, with kachumbari & fries", image_url:"https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400"},
-{name:"Rolex Deluxe", price:7000, category:"Local", description:"2 eggs, avocado, minced meat, cheese", image_url:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400"},
-{name:"Pilau Goat", price:18000, category:"Local", description:"Swahili pilau with tender goat, served with kachumbari", image_url:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400"},
-{name:"Beef Muchomo", price:22000, category:"Grill", description:"300g skewered beef, bbq glaze, fries", image_url:"https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400"},
-{name:"Fresh Passion Juice", price:5000, category:"Drinks", description:"Cold pressed, no sugar", image_url:"https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400"},
+{name:"Grilled Chicken Full",price:28000,category:"Grill",description:"Charcoal grilled 45min, kachumbari & fries",image_url:"https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400"},
+{name:"Rolex Deluxe",price:7000,category:"Local",description:"2 eggs, avocado, minced meat",image_url:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400"},
+{name:"Pilau Goat",price:18000,category:"Local",description:"Swahili pilau with tender goat",image_url:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400"},
 ];
 
-let foods=[], cart=[], activeCat='All';
-db.collection('products').onSnapshot(snap=>{
-  foods = snap.docs.length? snap.docs.map(d=>({id:d.id,...d.data()})) : demoFoods;
-  renderCats(); render();
-}, ()=>{ foods=demoFoods; renderCats(); render(); });
+db.collection('config').doc('banner').onSnapshot(doc=>{
+ if(doc.exists){ let url=doc.data().url; document.getElementById('hero').style.background=`linear-gradient(0deg,rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.25) 65%), url('${url}') center/cover`; }
+});
+db.collection('products').where('is_available','==',true).onSnapshot(snap=>{
+ foods=snap.docs.length? snap.docs.map(d=>({id:d.id,...d.data()})): demoFoods; renderCats(); render();
+},()=>{ foods=demoFoods; renderCats(); render(); });
 
-function renderCats(){let cats=['All',...new Set(foods.map(f=>f.category))];document.getElementById('cats').innerHTML=cats.map(c=>`<button onclick="setCat('${c}')" class="whitespace-nowrap px-5 py-2.5 rounded-full text-[11px] font-medium tracking-widest transition-all ${activeCat==c?'bg-[#0A0A0A] text-[#D4B67A]':'bg-white text-black/60 border border-black/5'}">${c.toUpperCase()}</button>`).join('');}
+function renderCats(){let cats=['All',...new Set(foods.map(f=>f.category))];document.getElementById('cats').innerHTML=cats.map(c=>`<button onclick="setCat('${c}')" class="whitespace-nowrap px-5 py-2.5 rounded-full text-[11px] font-medium tracking-widest ${activeCat==c?'bg-[#0A0A0A] text-[#D4B67A]':'bg-white text-black/60 border border-black/5'}">${c.toUpperCase()}</button>`).join('');}
 function setCat(c){activeCat=c;renderCats();render();}
-function render(){let list=activeCat=='All'?foods:foods.filter(f=>f.category==activeCat);document.getElementById('menu').innerHTML=list.map(f=>`
-<div class="bg-white rounded-[32px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
-<img src="${f.image_url}" class="w-full h-[210px] object-cover">
-<div class="p-6">
-<div class="flex justify-between items-start">
-<div><h3 class="serif text-[20px] leading-tight font-semibold">${f.name}</h3><p class="text-[11px] text-black/50 mt-1.5 leading-[1.4] max-w-[200px]">${f.description||''}</p></div>
-<button onclick="add('${f.id||f.name}')" class="w-10 h-10 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[18px]">+</button>
-</div>
-<div class="mt-4 flex items-center gap-2"><span class="text-[14px] font-bold">UGX ${f.price.toLocaleString()}</span><span class="w-1 h-1 bg-black/20 rounded-full"></span><span class="text-[10px] text-black/40 tracking-widest">CHEF'S PICK</span></div>
-</div></div>`).join('');}
+function render(){let list=activeCat=='All'?foods:foods.filter(f=>f.category==activeCat);document.getElementById('menu').innerHTML=list.map(f=>`<div class="bg-white rounded-[32px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.04)]"><img src="${f.image_url}" class="w-full h-[210px] object-cover"><div class="p-6"><div class="flex justify-between items-start"><div><h3 class="serif text-[20px] font-semibold">${f.name}</h3><p class="text-[11px] text-black/50 mt-1 max-w-[200px]">${f.description||''}</p></div><button onclick="add('${f.id||f.name}')" class="w-10 h-10 bg-[#0A0A0A] text-[#D4B67A] rounded-full text-[18px]">+</button></div><div class="mt-4 text-[14px] font-bold">UGX ${f.price.toLocaleString()}</div></div></div>`).join('');}
 function add(id){let f=foods.find(x=>(x.id==id)||(x.name==id));let e=cart.find(x=>x.name==f.name);if(e)e.qty++;else cart.push({...f,qty:1});updateBtn();}
-function updateBtn(){let c=cart.reduce((a,b)=>a+b.qty,0),t=cart.reduce((a,b)=>a+b.price*b.qty,0);let btn=document.getElementById('cartBtn');if(c>0){btn.classList.remove('hidden');document.getElementById('cartCount').innerText=c;document.getElementById('cartText').innerText=c+' dish'+(c>1?'es':'');document.getElementById('cartPrice').innerText='UGX '+t.toLocaleString();document.getElementById('cartCount').innerText=c;}else btn.classList.add('hidden');}
-function openCart(){document.getElementById('cartPage').classList.remove('hidden');let t=cart.reduce((a,b)=>a+b.price*b.qty,0);document.getElementById('cartList').innerHTML=cart.map(f=>`<div class="bg-white rounded-[20px] p-4 flex gap-4 items-center"><img src="${f.image_url}" class="w-16 h-16 rounded-[14px] object-cover"><div class="flex-1"><p class="font-semibold text-[13px]">${f.name}</p><p class="text-[11px] text-black/50">UGX ${f.price.toLocaleString()} • Qty ${f.qty}</p></div><p class="font-bold text-[13px]">UGX ${(f.price*f.qty).toLocaleString()}</p></div>`).join('');document.getElementById('sub').innerText='UGX '+t.toLocaleString();document.getElementById('total').innerText='UGX '+(t+2000).toLocaleString();}
+function updateBtn(){let c=cart.reduce((a,b)=>a+b.qty,0),t=cart.reduce((a,b)=>a+b.price*b.qty,0);let btn=document.getElementById('cartBtn');if(c>0){btn.classList.remove('hidden');cartCount.innerText=c;cartText.innerText=c+' dish'+(c>1?'es':'');cartPrice.innerText='UGX '+t.toLocaleString();}else btn.classList.add('hidden');}
+function openCart(){document.getElementById('cartPage').classList.remove('hidden');updateDelivery();}
 function closeCart(){document.getElementById('cartPage').classList.add('hidden');}
-async function placeOrder(){let btn=document.getElementById('orderBtn');btn.innerText='PLACING...';let total=cart.reduce((a,b)=>a+b.price*b.qty,0)+2000;await db.collection('orders').add({customer_name:cname.value,customer_phone:cphone.value,location:cloc.value,note:note.value,total,items:cart,status:'new',created_at:firebase.firestore.FieldValue.serverTimestamp()});alert('Order placed!');cart=[];updateBtn();closeCart();btn.innerText='CONFIRM ORDER';}
+function updateDelivery(){let area=cloc.value||'Kataza';currentDelivery=deliveryFees[area]||500;areaName.innerText=area;deliveryLabel.innerText='UGX '+currentDelivery.toLocaleString();let t=cart.reduce((a,b)=>a+b.price*b.qty,0);cartList.innerHTML=cart.map(f=>`<div class="bg-white rounded-[20px] p-4 flex gap-4 items-center"><img src="${f.image_url}" class="w-16 h-16 rounded-[14px] object-cover"><div class="flex-1"><p class="font-semibold text-[13px]">${f.name}</p><p class="text-[11px] text-black/50">UGX ${f.price} x ${f.qty}</p></div><p class="font-bold text-[13px]">UGX ${(f.price*f.qty).toLocaleString()}</p></div>`).join('');sub.innerText='UGX '+t.toLocaleString();total.innerText='UGX '+(t+currentDelivery).toLocaleString();}
+async function placeOrder(){if(!cloc.value) return alert('Select delivery area'); if(!cname.value||!cphone.value) return alert('Enter name & phone'); orderBtn.innerText='PLACING...'; let total=cart.reduce((a,b)=>a+b.price*b.qty,0)+currentDelivery; await db.collection('orders').add({customer_name:cname.value,customer_phone:cphone.value,area:cloc.value,location:cloc.value+' - '+clocDetail.value,delivery_fee:currentDelivery,total,items:cart,note:note.value,status:'new',created_at:firebase.firestore.FieldValue.serverTimestamp()}); alert('Order placed! Delivery: UGX '+currentDelivery); cart=[]; updateBtn(); closeCart(); orderBtn.innerText='CONFIRM ORDER';}
 </script></body></html>
