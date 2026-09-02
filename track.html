@@ -1,134 +1,81 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track - Quick Bite Kataza</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet"><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><style>body{font-family:'Instrument Sans',sans-serif;background:#0A0A0A}.serif{font-family:'Cormorant Garamond',serif}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,182,122,0.7)}70%{box-shadow:0 0 0 12px rgba(212,182,122,0)}100%{box-shadow:0 0 0 0 rgba(212,182,122,0)}}.slide-in{animation:slide 0.4s ease}@keyframes slide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}</style></head><body><div class="max-w-[430px] mx-auto min-h-screen bg-[#F5F1E9] relative overflow-hidden">
-
-<div class="absolute top-3 right-5 z-50"><button onclick="toggleSound()" id="soundBtn" class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-full text-[10px] text-white/60 border border-white/10">🔔 Sound ON</button></div>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track - Quick Bite Kataza</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet"><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><style>body{font-family:'Instrument Sans',sans-serif;background:#0A0A0A}.serif{font-family:'Cormorant Garamond',serif}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,182,122,0.7)}70%{box-shadow:0 0 0 12px rgba(212,182,122,0)}100%{box-shadow:0 0 0 0 rgba(212,182,122,0)}}</style></head><body><div class="max-w-[430px] mx-auto min-h-screen bg-[#F5F1E9] relative overflow-hidden">
 
 <div class="h-[260px] bg-[#0A0A0A] relative rounded-b-[32px] overflow-hidden">
 <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(#D4B67A 1px, transparent 1px);background-size:22px 22px"></div>
 <div class="absolute top-5 left-5 right-5 flex justify-between items-center z-10"><a href="index.html" class="w-9 h-9 bg-white rounded-full flex items-center justify-center font-bold">←</a><span class="bg-white/10 backdrop-blur text-[#D4B67A] text-[10px] tracking-[3px] font-bold px-4 py-2 rounded-full border border-white/10">LIVE TRACKING</span><div class="w-9"></div></div>
 <div class="absolute bottom-7 left-7 right-7 z-10">
-<p class="text-white/40 text-[10px] tracking-[3px] font-bold" id="topStatus">READY</p>
+<p class="text-white/40 text-[10px] tracking-[3px] font-bold" id="topStatus">SEARCHING ORDER...</p>
 <h1 class="serif text-white text-[32px] leading-[0.9] mt-2 font-bold">Your order<br><span class="text-[#D4B67A] italic font-normal" id="mainHead">is on the way</span></h1>
-<div class="mt-4 flex items-center gap-3"><div id="liveDot" class="w-3 h-3 bg-[#D4B67A] rounded-full pulse"></div><p class="text-white/60 text-[11px]" id="liveText">Waiting for ID...</p></div>
+<div class="mt-4 flex items-center gap-3"><div id="liveDot" class="w-3 h-3 bg-[#D4B67A] rounded-full pulse"></div><p class="text-white/60 text-[11px]" id="liveText">Connecting to kitchen...</p></div>
 </div>
-</div>
-
-<div id="notifyPopup" class="hidden fixed top-[20px] left-1/2 -translate-x-1/2 w-[90%] max-w-[360px] bg-[#0A0A0A] text-white rounded-[20px] p-4 flex gap-3 items-center z-[100] shadow-2xl slide-in border border-[#D4B67A]/20">
-<div class="w-10 h-10 bg-[#D4B67A] rounded-full flex items-center justify-center text-black font-bold">!</div>
-<div class="flex-1"><p class="font-bold text-[12px]" id="popupTitle">Status Updated</p><p class="text-[11px] text-white/60" id="popupMsg">Your order is now preparing</p></div>
-<button onclick="document.getElementById('notifyPopup').classList.add('hidden')" class="text-white/40 text-[12px]">✕</button>
 </div>
 
 <div class="-mt-6 mx-5 bg-white rounded-[20px] p-3 shadow-[0_12px_32px_rgba(0,0,0,0.08)] flex gap-2 z-20 relative">
-<input id="orderIdInput" placeholder="Order ID auto-fills here" class="flex-1 bg-[#F5F1E9] rounded-full px-5 py-3.5 text-[12px] outline-none font-bold tracking-widest">
+<input id="orderIdInput" placeholder="Enter Order ID" class="flex-1 bg-[#F5F1E9] rounded-full px-5 py-3.5 text-[12px] outline-none font-bold tracking-widest">
 <button onclick="trackManually()" class="bg-[#0A0A0A] text-[#D4B67A] px-6 rounded-full text-[10px] font-bold tracking-widest">GO</button>
 </div>
 
 <div id="orderBox" class="hidden px-5 mt-6 pb-10 space-y-4">
 <div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="cust" class="text-[11px] text-black/50 mt-1"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
-<div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white"><p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p><div id="steps" class="mt-6"></div></div>
-<div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
-<div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
+
+<div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white">
+<p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p>
+<div id="steps" class="mt-6"></div>
 </div>
 
-<p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found. Try short ID e.g 3F9A2B</p>
+<div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
+
+<div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
+
+<div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call kitchen</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
+</div>
+
+<p id="notFound" class="hidden text-center py-16 text-[12px] text-black/40 px-10">Order not found. Check ID. If you ordered on this phone, your last order loads automatically.</p>
 
 </div><script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
-let unsub=null, lastStatus=null, soundOn=true;
-const flow=[{k:'new',t:'Order Received',d:'We got your order'}, {k:'preparing',t:'Preparing',d:'Kitchen is cooking'}, {k:'on the way',t:'On the Way',d:'Rider is coming'}, {k:'served',t:'Delivered',d:'Enjoy your meal!'}];
+let unsub=null;
+const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy your meal!',icon:'✓'}];
 const heads={new:'is confirmed',preparing:'is being cooked', 'on the way':'is on the way', served:'has arrived', canceled:'was canceled'};
-
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type){
- if(!soundOn) return; try{
-  if(audioCtx.state==='suspended') audioCtx.resume();
-  const play = (freq, dur, delay=0)=>{ setTimeout(()=>{ let o=audioCtx.createOscillator(); let g=audioCtx.createGain(); o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); g.gain.value=0.35; o.start(); setTimeout(()=>o.stop(),dur); }, delay); };
-  if(type==='new'){ play(800,200); }
-  else if(type==='preparing'){ play(600,200); play(900,250,200); }
-  else if(type==='on the way'){ play(500,200); play(700,200,150); play(900,200,300); }
-  else if(type==='served'){ [523,659,784,1046].forEach((f,i)=> play(f,300,i*120)); }
- }catch(e){}
- if(navigator.vibrate) navigator.vibrate([200,100,200]);
-}
-function showPopup(title, msg){
- document.getElementById('popupTitle').innerText=title; document.getElementById('popupMsg').innerText=msg; document.getElementById('notifyPopup').classList.remove('hidden');
- if(Notification && Notification.permission==='granted'){ new Notification(title,{body:msg}); }
- setTimeout(()=> document.getElementById('notifyPopup').classList.add('hidden'), 5000);
-}
-function toggleSound(){ soundOn=!soundOn; document.getElementById('soundBtn').innerText=soundOn?'🔔 Sound ON':'🔕 Sound OFF'; if(soundOn){ if(audioCtx.state==='suspended') audioCtx.resume(); playSound('new'); } }
-if(Notification && Notification.permission!=='granted' && Notification.permission!=='denied'){ Notification.requestPermission(); }
 
 function renderSteps(current){
  let idx=flow.findIndex(f=>f.k===current);
- if(current==='canceled'){ document.getElementById('steps').innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center"><p class="text-red-400 font-bold text-[13px]">Order Canceled</p></div>`; topStatus.innerText='CANCELED'; mainHead.innerText='was canceled'; liveDot.className='w-3 h-3 bg-red-500 rounded-full'; liveText.innerText='Canceled'; return; }
- document.getElementById('steps').innerHTML=flow.map((f,i)=>{
+ if(current==='canceled'){ steps.innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center"><p class="text-red-400 font-bold text-[13px]">Order Canceled</p></div>`; topStatus.innerText='CANCELED'; mainHead.innerText='was canceled'; liveDot.className='w-3 h-3 bg-red-500 rounded-full'; liveText.innerText='Canceled by admin'; return; }
+ steps.innerHTML=flow.map((f,i)=>{
   let active=i<=idx, isNow=f.k===current;
-  return `<div class="flex gap-4 relative"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold z-10 ${active? 'bg-[#D4B67A] text-black'+(isNow?' pulse':'') : 'bg-white/10 text-white/30'}">${active?'✓':'•'}</div>${i<3?`<div class="w-[2px] h-10 mt-2 ${i<idx?'bg-[#D4B67A]':'bg-white/10'}"></div>`:''}</div><div class="pb-10"><p class="font-bold text-[13px] ${active?'text-white': 'text-white/30'}">${f.t} ${isNow?'<span class="ml-2 text-[9px] bg-[#D4B67A] text-black px-2 py-0.5 rounded-full">NOW</span>':''}</p><p class="text-[11px] ${active?'text-white/60':'text-white/20'} mt-1">${f.d}</p></div></div>`;
+  return `<div class="flex gap-4 relative"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold z-10 ${active? 'bg-[#D4B67A] text-black'+(isNow?' pulse':'') : 'bg-white/10 text-white/30'}">${f.icon}</div>${i<3?`<div class="w-[2px] h-10 mt-2 ${i<idx?'bg-[#D4B67A]':'bg-white/10'}"></div>`:''}</div><div class="pb-10"><p class="font-bold text-[13px] ${active?'text-white': 'text-white/30'}">${f.t} ${isNow?'<span class="ml-2 text-[9px] bg-[#D4B67A] text-black px-2 py-0.5 rounded-full">NOW</span>':''}</p><p class="text-[11px] ${active?'text-white/60':'text-white/20'} mt-1">${f.d}</p></div></div>`;
  }).join('');
  topStatus.innerText=(current||'NEW').toUpperCase(); mainHead.innerText=heads[current]||'is confirmed'; liveText.innerText=flow.find(f=>f.k===current)?.d||'Live updating...';
 }
 
 function listen(id){
- if(!id) return;
  if(unsub) unsub();
- id = id.trim();
- // FIX: AUTO-FILL INPUT WITH FULL AND SHORT
+ // AUTO-PLACE ID IN INPUT
  document.getElementById('orderIdInput').value = id.slice(0,8).toUpperCase();
  localStorage.setItem('lastOrderId', id);
- sessionStorage.setItem('lastOrderId', id);
- localStorage.setItem('lastOrderIdShort', id.slice(0,8).toUpperCase());
- document.getElementById('orderBox').classList.remove('hidden'); document.getElementById('notFound').classList.add('hidden');
- document.getElementById('oid').innerText=id.slice(0,8).toUpperCase();
+ orderBox.classList.remove('hidden'); notFound.classList.add('hidden'); oid.innerText=id.slice(0,8).toUpperCase();
  unsub=db.collection('orders').doc(id).onSnapshot(doc=>{
-  if(!doc.exists){
-   // try find by short id
-   db.collection('orders').orderBy('created_at','desc').limit(100).get().then(s=>{
-    let found=s.docs.find(d=>d.id.slice(0,8).toUpperCase()===id.toUpperCase() || d.id.toLowerCase()===id.toLowerCase());
-    if(found && found.id!==id){ listen(found.id); return; }
-    document.getElementById('orderBox').classList.add('hidden'); document.getElementById('notFound').classList.remove('hidden');
-   }); return;
-  }
+  if(!doc.exists){ orderBox.classList.add('hidden'); notFound.classList.remove('hidden'); return; }
   let o=doc.data();
-  document.getElementById('cust').innerText=(o.customer_name||'')+' • '+(o.customer_phone||'');
-  document.getElementById('area').innerText=(o.area||'')+' • '+(o.location||'');
-  document.getElementById('total').innerText='UGX '+(o.total||0).toLocaleString();
-  document.getElementById('items').innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between items-center bg-[#F5F1E9] rounded-full px-4 py-2.5"><span class="text-[11px] font-bold">${i.name} x ${i.qty}</span><span class="text-[11px]">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
-  if(o.admin_message){ document.getElementById('adminMsgBox').classList.remove('hidden'); document.getElementById('adminMsg').innerText=o.admin_message; } else document.getElementById('adminMsgBox').classList.add('hidden');
-  if(lastStatus!==null && lastStatus!==o.status){
-   let nice = flow.find(f=>f.k===o.status)?.t || o.status;
-   let soundType = o.status==='new'?'new':o.status==='preparing'?'preparing':o.status==='on the way'?'on the way':'served';
-   playSound(soundType);
-   showPopup('Order: '+nice, flow.find(f=>f.k===o.status)?.d || 'Status changed to '+o.status);
-  }
-  lastStatus=o.status;
+  cust.innerText=(o.customer_name||'')+' • '+(o.customer_phone||'');
+  area.innerText=(o.area||'')+' • '+(o.location||'');
+  total.innerText='UGX '+(o.total||0).toLocaleString();
+  items.innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between items-center bg-[#F5F1E9] rounded-full px-4 py-2.5"><span class="text-[11px] font-bold">${i.name} x ${i.qty}</span><span class="text-[11px]">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
+  if(o.admin_message){ adminMsgBox.classList.remove('hidden'); adminMsg.innerText=o.admin_message; } else adminMsgBox.classList.add('hidden');
   renderSteps(o.status);
  });
 }
 
 function trackManually(){
  let input=document.getElementById('orderIdInput').value.trim(); if(!input) return;
- // search for full doc whose start matches input
- db.collection('orders').orderBy('created_at','desc').limit(150).get().then(s=>{
+ db.collection('orders').orderBy('created_at','desc').limit(100).get().then(s=>{
   let found=s.docs.find(d=>d.id.toLowerCase().startsWith(input.toLowerCase()) || d.id.slice(0,8).toUpperCase()===input.toUpperCase());
-  if(found) listen(found.id); else db.collection('orders').doc(input).get().then(d=>{ if(d.exists) listen(input); else document.getElementById('notFound').classList.remove('hidden'); });
+  if(found) listen(found.id); else {
+   db.collection('orders').doc(input).get().then(d=>{ if(d.exists) listen(input); else notFound.classList.remove('hidden'); });
+  }
  });
 }
 
-// --- AUTO-FILL LOGIC - READS FROM EVERYWHERE ---
-(function autoLoad(){
- let params=new URLSearchParams(location.search);
- let q = params.get('id') || params.get('order') || localStorage.getItem('lastOrderId') || sessionStorage.getItem('lastOrderId');
- console.log('Auto load ID found:', q);
- if(q){
-  // if short 6-8 chars, resolve to full
-  if(q.length<=8){
-   db.collection('orders').orderBy('created_at','desc').limit(150).get().then(s=>{
-    let found=s.docs.find(d=>d.id.slice(0,8).toUpperCase()===q.toUpperCase() || d.id.toLowerCase().startsWith(q.toLowerCase()));
-    if(found) listen(found.id); else listen(q);
-   });
-  } else {
-   listen(q);
-  }
- }
-})();
+let p=new URLSearchParams(location.search); let q=p.get('id'); let last=localStorage.getItem('lastOrderId');
+if(q) listen(q); else if(last) listen(last);
 </script></body></html>
