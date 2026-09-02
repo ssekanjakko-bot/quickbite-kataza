@@ -1,10 +1,42 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin REAL Fixed</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#F5F1E9] p-4"><div class="max-w-7xl mx-auto">
 <h1 class="text-2xl font-bold">Quick Bite Admin REAL</h1>
 
+<!-- DAILY MONEY SUMMARY WITH CATEGORIES -->
+<div class="bg-[#0A0A0A] text-white rounded-[24px] p-5 mt-4">
+<div class="flex flex-wrap justify-between items-center gap-3">
+<div>
+<h2 class="text-[#D4B67A] text-[11px] tracking-[3px] font-bold">DAILY COLLECTION - BY CATEGORY</h2>
+<div class="flex items-center gap-2 mt-3">
+<input id="datePick" type="date" class="bg-white/10 text-white rounded-full px-4 py-2 text-xs outline-none">
+<button onclick="calcForDate()" class="bg-[#D4B67A] text-black px-4 py-2 rounded-full text-[11px] font-bold">CHECK</button>
+<button onclick="setToday()" class="bg-white/10 text-white/60 px-3 py-2 rounded-full text-[11px]">Today</button>
+</div>
+</div>
+<div class="flex gap-2">
+<button onclick="deleteAllCompleted()" class="bg-red-500/20 border border-red-500/30 text-red-400 px-3 py-2 rounded-full text-[10px] font-bold">DEL COMPLETED</button>
+<button onclick="deleteAllCanceled()" class="bg-white/10 text-white/60 px-3 py-2 rounded-full text-[10px] font-bold">DEL CANCELED</button>
+</div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-5">
+<div class="bg-white/10 rounded-xl p-3"><p class="text-[8px] text-white/40 tracking-[2px]">ROLEX</p><p id="catRolex" class="font-bold text-[14px] mt-1">UGX 0</p><p id="catRolexQty" class="text-[9px] text-white/30">0 items</p></div>
+<div class="bg-white/10 rounded-xl p-3"><p class="text-[8px] text-white/40 tracking-[2px]">FRIES</p><p id="catFries" class="font-bold text-[14px] mt-1">UGX 0</p><p id="catFriesQty" class="text-[9px] text-white/30">0 items</p></div>
+<div class="bg-white/10 rounded-xl p-3"><p class="text-[8px] text-white/40 tracking-[2px]">JUICE</p><p id="catJuice" class="font-bold text-[14px] mt-1">UGX 0</p><p id="catJuiceQty" class="text-[9px] text-white/30">0 items</p></div>
+<div class="bg-white/10 rounded-xl p-3"><p class="text-[8px] text-white/40 tracking-[2px]">SODA</p><p id="catSoda" class="font-bold text-[14px] mt-1">UGX 0</p><p id="catSodaQty" class="text-[9px] text-white/30">0 items</p></div>
+<div class="bg-white/10 rounded-xl p-3"><p class="text-[8px] text-white/40 tracking-[2px]">OTHER</p><p id="catOther" class="font-bold text-[14px] mt-1">UGX 0</p><p id="catOtherQty" class="text-[9px] text-white/30">0 items</p></div>
+<div class="bg-[#D4B67A]/20 border border-[#D4B67A]/30 rounded-xl p-3"><p class="text-[8px] text-[#D4B67A] tracking-[2px]">DELIVERY FEE</p><p id="sumDelivery" class="font-bold text-[14px] mt-1 text-[#D4B67A]">UGX 0</p><p id="deliveryCount" class="text-[9px] text-[#D4B67A]/60">0 deliveries</p></div>
+</div>
+
+<div class="grid grid-cols-3 gap-3 mt-3">
+<div class="bg-white text-black rounded-xl p-3"><p class="text-[9px] text-black/40 tracking-widest">DISHES TOTAL</p><p id="sumDishes" class="font-bold text-[16px] mt-1">UGX 0</p></div>
+<div class="bg-white text-black rounded-xl p-3"><p class="text-[9px] text-black/40 tracking-widest">ALL COLLECTED</p><p id="sumTotal" class="font-bold text-[16px] mt-1">UGX 0</p><p id="sumCount" class="text-[10px] text-black/40">0 orders</p></div>
+<div class="bg-[#D4B67A] text-black rounded-xl p-3"><p class="text-[9px] tracking-widest font-bold">MAJOR TOTAL (Dishes + Delivery)</p><p id="majorTotal" class="font-bold text-[18px] mt-1">UGX 0</p><p class="text-[9px] mt-1">Profit for day</p></div>
+</div>
+</div>
+
 <div class="grid lg:grid-cols-[380px_1fr] gap-6 mt-6">
 <div class="space-y-6">
 <div class="bg-[#0A0A0A] text-white p-5 rounded-[24px]"><h2 class="text-[#D4B67A] text-[11px] tracking-[3px] font-bold">BANNERS MAX 7</h2><p id="bannerCount" class="text-white/40 text-[11px]">0/7</p><input id="bTitle" placeholder="Banner Title" class="w-full bg-white/10 rounded-full px-4 py-3 text-xs mt-4 outline-none"><input id="bannerFile" type="file" accept="image/*" class="mt-3 w-full text-xs"><button onclick="addBanner()" id="bannerBtn" class="w-full mt-3 bg-[#D4B67A] text-black py-3 rounded-full text-xs font-bold">ADD BANNER</button><div id="bannerList" class="mt-4 space-y-2"></div></div>
-
 <div class="bg-white p-5 rounded-[24px] shadow-sm">
 <h2 class="font-bold text-[13px]">Add Real Dish</h2>
 <input id="dishName" placeholder="Name e.g Rolex" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
@@ -17,13 +49,10 @@
 <div class="mt-5"><p class="font-bold text-[11px]">YOUR MENU (<span id="foodCount">0</span>)</p><div id="foods" class="mt-3 grid grid-cols-2 gap-2"></div></div>
 </div>
 </div>
-
 <div class="bg-white rounded-[24px] p-5"><h2 class="font-bold">Orders - <span id="liveCount" class="text-[#D4B67A]">LIVE</span></h2>
 <div class="flex gap-2 mt-4 overflow-x-auto" id="tabs">
-<button onclick="setFilter('live')" data-f="live" class="tab-active bg-black text-[#D4B67A] px-4 py-2 rounded-full text-[11px] font-bold">LIVE (<span id="cLive">0</span>)</button>
+<button onclick="setFilter('live')" data-f="live" class="bg-black text-[#D4B67A] px-4 py-2 rounded-full text-[11px] font-bold">LIVE (<span id="cLive">0</span>)</button>
 <button onclick="setFilter('all')" data-f="all" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">ALL</button>
-<button onclick="setFilter('new')" data-f="new" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">NEW</button>
-<button onclick="setFilter('preparing')" data-f="preparing" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">PREPARING</button>
 <button onclick="setFilter('served')" data-f="served" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">COMPLETED (<span id="cDone">0</span>)</button>
 <button onclick="setFilter('canceled')" data-f="canceled" class="bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold">CANCELED (<span id="cCancel">0</span>)</button>
 </div><div id="orders" class="mt-4 space-y-3"></div></div>
@@ -31,109 +60,101 @@
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const storage=firebase.storage();
-let allOrders=[], filter='live';
-let prevIds = new Set();
-
-async function addBanner(){ let snap=await db.collection('banners').get(); if(snap.size>=7) return alert('Max 7'); let f=document.getElementById('bannerFile').files[0]; if(!f) return alert('Select image'); bannerBtn.innerText='Uploading...'; let ref=storage.ref('banners/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('banners').add({url,title:bTitle.value,order:snap.size,created_at:firebase.firestore.FieldValue.serverTimestamp()}); bannerBtn.innerText='ADD BANNER'; }
-
-async function addDish(){
- let n=document.getElementById('dishName').value.trim();
- let p=document.getElementById('dishPrice').value.trim();
- let c=document.getElementById('dishCat').value;
- let d=document.getElementById('dishDesc').value.trim();
- let fileInput=document.getElementById('dishFile');
- let f=fileInput.files[0];
- if(!n||!p||!f){ alert('Name, Price, Photo required'); return; }
- ubtn.innerText='Uploading...'; ubtn.disabled=true; dishMsg.innerText='Uploading...';
- try{ let ref=storage.ref('foods/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('products').add({name:n,price:+p,category:c,description:d,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()}); dishMsg.innerText='Added!'; document.getElementById('dishName').value=''; document.getElementById('dishPrice').value=''; fileInput.value=''; }catch(e){ alert('Upload failed: '+e.message); dishMsg.innerText=e.message; } ubtn.innerText='ADD DISH'; ubtn.disabled=false;
-}
-
+let allOrders=[], filter='live'; let prevIds=new Set();
+async function addBanner(){ let snap=await db.collection('banners').get(); if(snap.size>=7) return alert('Max 7'); let f=bannerFile.files[0]; if(!f) return alert('Select image'); bannerBtn.innerText='Uploading...'; let ref=storage.ref('banners/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('banners').add({url,title:bTitle.value,order:snap.size,created_at:firebase.firestore.FieldValue.serverTimestamp()}); bannerBtn.innerText='ADD BANNER'; }
+async function addDish(){ let n=dishName.value.trim(); let p=dishPrice.value.trim(); let c=dishCat.value; let d=dishDesc.value.trim(); let f=dishFile.files[0]; if(!n||!p||!f){ alert('Name, Price, Photo required'); return; } ubtn.innerText='Uploading...'; ubtn.disabled=true; try{ let ref=storage.ref('foods/'+Date.now()+'_'+f.name); await ref.put(f); let url=await ref.getDownloadURL(); await db.collection('products').add({name:n,price:+p,category:c,description:d,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()}); dishName.value=''; dishPrice.value=''; dishFile.value=''; }catch(e){ alert(e.message); } ubtn.innerText='ADD DISH'; ubtn.disabled=false; }
 function setFilter(f){ filter=f; document.querySelectorAll('#tabs button').forEach(b=> b.className = b.dataset.f===f?'bg-black text-[#D4B67A] px-4 py-2 rounded-full text-[11px] font-bold':'bg-[#F5F1E9] px-4 py-2 rounded-full text-[11px] font-bold'); renderOrders(); }
-
 db.collection('banners').orderBy('order').onSnapshot(s=>{ bannerCount.innerText=s.size+'/7'; bannerList.innerHTML=s.docs.map(doc=>`<div class="flex gap-2 items-center bg-white/10 p-2 rounded-xl"><img src="${doc.data().url}" class="w-14 h-10 rounded-lg object-cover"><button onclick="db.collection('banners').doc('${doc.id}').delete()" class="bg-red-600 text-white text-[9px] px-2 py-1 rounded-full">DEL</button></div>`).join(''); });
 db.collection('products').onSnapshot(s=>{ foodCount.innerText=s.size; foods.innerHTML=s.docs.map(doc=>{let f=doc.data(); return `<div class="border rounded-xl overflow-hidden"><img src="${f.image_url}" class="h-20 w-full object-cover"><div class="p-2 text-[10px]"><b>${f.name}</b><br>UGX ${f.price}<br><button onclick="db.collection('products').doc('${doc.id}').delete()" class="bg-red-500 text-white px-2 py-1 rounded-full mt-1">Del</button></div></div>`}).join(''); });
 
-// --- ORDERS WITH TIME + CANCEL DETECTION ---
-db.collection('orders').orderBy('created_at','desc').limit(100).onSnapshot(s=>{
+db.collection('orders').orderBy('created_at','desc').limit(300).onSnapshot(s=>{
  let newList=s.docs.map(d=>({id:d.id,...d.data()}));
- // detect new customer canceled
- newList.forEach(o=>{
-   if(prevIds.has(o.id)){
-     let old = allOrders.find(x=>x.id===o.id);
-     if(old && old.status!==o.status && o.status==='canceled'){
-       if(o.canceled_by==='customer'){
-         playAlert('Customer CANCELED: '+(o.customer_name||o.id.slice(0,6)));
-       } else {
-         playAlert('Order canceled');
-       }
-     }
-   }
-   if(!prevIds.has(o.id) && o.status==='new'){
-     playAlert('New order! '+ (o.customer_name||''));
-   }
- });
- prevIds = new Set(newList.map(o=>o.id));
- allOrders=newList; renderOrders();
+ allOrders=newList; renderOrders(); calcForDate(true);
 });
 
-function playAlert(msg){
- try{
-   let ctx=new (window.AudioContext||window.webkitAudioContext)();
-   let o=ctx.createOscillator(); let g=ctx.createGain(); o.frequency.value=900; o.connect(g); g.connect(ctx.destination); g.gain.value=0.4; o.start(); setTimeout(()=>o.stop(),400);
-   if(navigator.vibrate) navigator.vibrate([300,100,300]);
-   console.log('%c '+msg, 'background:#000;color:#D4B67A;padding:4px 8px');
- }catch(e){}
+function timeAgo(ts){ if(!ts) return ''; let d=ts.toDate?ts.toDate():new Date(ts); let mins=Math.floor((new Date()-d)/60000); if(mins<1) return 'Just now • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); if(mins<60) return mins+' min ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); return Math.floor(mins/60)+'h '+(mins%60)+'m ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+
+function setToday(){ datePick.valueAsDate=new Date(); calcForDate(); }
+function calcForDate(silent=false){
+ let pick=document.getElementById('datePick').value;
+ if(!pick){ let t=new Date(); pick=t.toISOString().slice(0,10); document.getElementById('datePick').value=pick; if(!silent) return; }
+ // only served orders for money
+ let dayOrders = allOrders.filter(o=>{
+   if(o.status!=='served') return false;
+   let d=o.served_at||o.created_at; if(!d) return false;
+   let dt=d.toDate?d.toDate():new Date(d);
+   return dt.toISOString().slice(0,10)===pick;
+ });
+
+ let totals={Rolex:0,Fries:0,Juice:0,Soda:0,Other:0};
+ let qty={Rolex:0,Fries:0,Juice:0,Soda:0,Other:0};
+ let delivery=0, dishesTotal=0, grand=0;
+
+ dayOrders.forEach(o=>{
+   let del=o.delivery_fee||o.deliveryFee||o.delivery||0;
+   delivery+=del;
+   (o.items||[]).forEach(it=>{
+     let cat=(it.category||it.cat||'Other').trim();
+     let price=(it.price||0)*(it.qty||1);
+     let normCat=Object.keys(totals).find(k=>k.toLowerCase()===cat.toLowerCase())||'Other';
+     totals[normCat]+=price;
+     qty[normCat]+=(it.qty||1);
+     dishesTotal+=price;
+   });
+   grand+= (o.total||0);
+ });
+
+ // if items had no category, fallback to total-delivery
+ if(dishesTotal===0 && dayOrders.length){ dishesTotal=grand-delivery; totals.Other=dishesTotal; }
+
+ // if grand is 0 (old orders), use dishes+delivery
+ if(grand===0) grand=dishesTotal+delivery;
+
+ document.getElementById('catRolex').innerText='UGX '+totals.Rolex.toLocaleString();
+ document.getElementById('catFries').innerText='UGX '+totals.Fries.toLocaleString();
+ document.getElementById('catJuice').innerText='UGX '+totals.Juice.toLocaleString();
+ document.getElementById('catSoda').innerText='UGX '+totals.Soda.toLocaleString();
+ document.getElementById('catOther').innerText='UGX '+totals.Other.toLocaleString();
+ document.getElementById('catRolexQty').innerText=qty.Rolex+' items';
+ document.getElementById('catFriesQty').innerText=qty.Fries+' items';
+ document.getElementById('catJuiceQty').innerText=qty.Juice+' items';
+ document.getElementById('catSodaQty').innerText=qty.Soda+' items';
+ document.getElementById('catOtherQty').innerText=qty.Other+' items';
+
+ document.getElementById('sumDelivery').innerText='UGX '+delivery.toLocaleString();
+ document.getElementById('deliveryCount').innerText=dayOrders.length+' deliveries';
+ document.getElementById('sumDishes').innerText='UGX '+dishesTotal.toLocaleString();
+ document.getElementById('sumTotal').innerText='UGX '+grand.toLocaleString();
+ document.getElementById('majorTotal').innerText='UGX '+grand.toLocaleString();
+ document.getElementById('sumCount').innerText=dayOrders.length+' orders • '+pick;
 }
 
-function timeAgo(ts){
- if(!ts) return '';
- let d = ts.toDate? ts.toDate() : new Date(ts);
- let mins = Math.floor((new Date()-d)/60000);
- if(mins<1) return 'Just now • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
- if(mins<60) return mins+' min ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
- return Math.floor(mins/60)+'h '+ (mins%60)+'m ago • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
+async function deleteOrder(id){ if(!confirm('Delete permanently?')) return; await db.collection('orders').doc(id).delete(); }
+async function deleteAllCompleted(){ if(!confirm('DELETE ALL COMPLETED?')) return; let list=allOrders.filter(o=>o.status==='served'); if(!list.length) return alert('No completed'); if(!confirm('Delete '+list.length+'?')) return; for(let o of list) await db.collection('orders').doc(o.id).delete(); }
+async function deleteAllCanceled(){ if(!confirm('DELETE ALL CANCELED?')) return; let list=allOrders.filter(o=>o.status==='canceled'); if(!list.length) return alert('No canceled'); if(!confirm('Delete '+list.length+'?')) return; for(let o of list) await db.collection('orders').doc(o.id).delete(); }
 
 function renderOrders(){
- let list=allOrders;
- let cLive = allOrders.filter(o=>['new','preparing','on the way'].includes(o.status)).length;
- let cDone = allOrders.filter(o=>o.status==='served').length;
- let cCancel = allOrders.filter(o=>o.status==='canceled').length;
- document.getElementById('cLive').innerText=cLive;
- document.getElementById('cDone').innerText=cDone;
- document.getElementById('cCancel').innerText=cCancel;
- document.getElementById('liveCount').innerText=cLive+' LIVE';
-
- if(filter==='live') list=list.filter(o=>['new','preparing','on the way'].includes(o.status));
- else if(filter!=='all') list=list.filter(o=>o.status===filter);
-
+ let list=allOrders; let cLive=allOrders.filter(o=>['new','preparing','on the way'].includes(o.status)).length; let cDone=allOrders.filter(o=>o.status==='served').length; let cCancel=allOrders.filter(o=>o.status==='canceled').length;
+ document.getElementById('cLive').innerText=cLive; document.getElementById('cDone').innerText=cDone; document.getElementById('cCancel').innerText=cCancel; document.getElementById('liveCount').innerText=cLive+' LIVE';
+ if(filter==='live') list=list.filter(o=>['new','preparing','on the way'].includes(o.status)); else if(filter!=='all') list=list.filter(o=>o.status===filter);
  if(!list.length){ orders.innerHTML='<p class="text-center py-10 text-black/30 text-xs">No '+filter+' orders</p>'; return; }
  orders.innerHTML=list.map(o=>{
-   let tStr = timeAgo(o.created_at);
-   let cancelBadge = '';
-   if(o.status==='canceled'){
-     if(o.canceled_by==='customer'){
-       cancelBadge=`<span class="bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded-full text-[9px] font-bold animate-pulse">⚠ CANCELED BY CUSTOMER</span>`;
-     } else {
-       cancelBadge=`<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-[9px]">Canceled by Admin</span>`;
-     }
-   }
-   let servedTime = o.served_at? `<span class="text-[10px] text-green-600">✓ Done at ${o.served_at.toDate? o.served_at.toDate().toLocaleTimeString():''}</span>` : '';
-   let canceledTime = o.canceled_at? `<span class="text-[10px] text-red-500">✕ Canceled at ${o.canceled_at.toDate? o.canceled_at.toDate().toLocaleTimeString():''}</span>` : '';
+   let tStr=timeAgo(o.created_at); let del=o.delivery_fee||0; let dishMoney=(o.total||0)-del;
+   let catLine=(o.items||[]).map(i=>`${i.name} (${i.category||'Other'}) x${i.qty}`).join(', ');
+   let badge=o.status==='canceled'?(o.canceled_by==='customer'?`<span class="bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded-full text-[9px] font-bold">⚠ BY CUSTOMER</span>`:`<span class="bg-gray-100 px-2 py-1 rounded-full text-[9px]">By Admin</span>`):'';
    return `<div class="bg-[#F5F1E9] p-3 rounded-xl border-l-4 ${o.status==='new'?'border-red-500':o.status==='canceled'?'border-red-400 bg-red-50':o.status==='served'?'border-green-500 bg-green-50/50':'border-yellow-500'}">
-<div class="flex justify-between items-start"><b class="text-xs">${o.customer_name||'No name'} ${o.customer_phone||''}</b><div class="flex flex-col items-end gap-1"><span class="text-[10px] bg-white px-2 py-1 rounded-full font-bold uppercase">${o.status}</span>${cancelBadge}</div></div>
+<div class="flex justify-between"><b class="text-xs">${o.customer_name||''} ${o.customer_phone||''}</b><div class="flex gap-1"><span class="text-[10px] bg-white px-2 py-1 rounded-full font-bold uppercase">${o.status}</span>${badge}</div></div>
 <p class="text-[11px] text-black/60 mt-1">🕒 ${tStr}</p>
-${servedTime}${canceledTime}
-<p class="text-[11px] mt-1">${o.area||''} ${o.location||''}</p>
-<p class="text-[11px] font-bold">${(o.items||[]).map(i=>i.name+' x'+i.qty).join(', ')}</p>
-<p class="text-xs font-bold mt-1">UGX ${(o.total||0).toLocaleString()}</p>
+<p class="text-[10px] mt-1 text-black/50">${catLine}</p>
+<p class="text-xs font-bold mt-1">UGX ${(o.total||0).toLocaleString()} <span class="font-normal text-[9px]">(Dish ${dishMoney.toLocaleString()} + Del ${del.toLocaleString()})</span></p>
 <div class="flex gap-2 mt-2 flex-wrap">
 ${o.status!=='canceled'&&o.status!=='served'?`
 <button onclick="db.collection('orders').doc('${o.id}').update({status:'preparing'})" class="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px]">Preparing</button>
 <button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way'})" class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px]">On Way</button>
 <button onclick="db.collection('orders').doc('${o.id}').update({status:'served', served_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px]">Done</button>
-<button onclick="if(confirm('Cancel order?')) db.collection('orders').doc('${o.id}').update({status:'canceled', canceled_by:'admin', canceled_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-black text-white px-3 py-1 rounded-full text-[10px]">Cancel</button>
-`: o.status==='served'?`<span class="text-[10px] text-green-600 font-bold">✓ MOVED TO COMPLETED</span>`:`<span class="text-[10px] text-red-500 font-bold">${o.canceled_by==='customer'?'Customer canceled this':'Canceled'}</span>`}
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'canceled', canceled_by:'admin', canceled_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-black text-white px-3 py-1 rounded-full text-[10px]">Cancel</button>
+`:`<button onclick="deleteOrder('${o.id}')" class="bg-white border border-red-200 text-red-500 px-3 py-1 rounded-full text-[10px]">Delete 🗑️</button>`}
 </div></div>`}).join('');
 }
+setToday();
 </script></body></html>
