@@ -1,1 +1,73 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#FAF6F0] p-6"><div class="max-w-5xl mx-auto"><h1 class="font-black text-xl">Quick Bite Admin - Firebase</h1><div class="mt-4 grid md:grid-cols-3 gap-4"><div class="bg-white p-4 rounded-xl">Sales <b id="sales">0</b></div><div class="bg-white p-4 rounded-xl">Orders <b id="oc">0</b></div><div class="bg-white p-4 rounded-xl">Live <b class="text-green-600">●</b></div></div><div class="mt-6 bg-white p-4 rounded-xl max-w-md"><input id="name" placeholder="Name" class="w-full border p-2 mt-2"><input id="price" type="number" placeholder="Price UGX" class="w-full border p-2 mt-2"><input id="cat" placeholder="Category" class="w-full border p-2 mt-2"><input id="desc" placeholder="Story" class="w-full border p-2 mt-2"><input id="file" type="file" class="mt-2"><button onclick="add()" id="ubtn" class="w-full bg-black text-[#C6A86A] py-3 mt-3 rounded-full font-bold">Upload Dish</button></div><h2 class="mt-8 font-bold">Live Orders (with TIME)</h2><div id="orders" class="mt-3 space-y-2"></div><h2 class="mt-8 font-bold">Menu</h2><div id="foods" class="mt-3 grid md:grid-cols-4 gap-3"></div></div><script>const firebaseConfig = { apiKey: "YOUR_KEY", authDomain: "YOUR_DOMAIN", projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_BUCKET", appId: "YOUR_APP_ID" };firebase.initializeApp(firebaseConfig);const db=firebase.firestore();async function add(){ubtn.innerText='Uploading...';let file=document.getElementById('file').files[0],url='';if(file){let ref=firebase.storage().ref('foods/'+Date.now()+'_'+file.name);await ref.put(file);url=await ref.getDownloadURL();}await db.collection('products').add({name:name.value,price:+price.value,category:cat.value,description:desc.value,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()});ubtn.innerText='Upload Dish';alert('Added');}db.collection('products').onSnapshot(s=>{foods.innerHTML=s.docs.map(d=>{let f=d.data();return `<div class="bg-white rounded-xl overflow-hidden"><img src="${f.image_url}" class="h-24 w-full object-cover"><div class="p-2 text-xs">${f.name} - ${f.price}<button onclick="db.collection('products').doc('${d.id}').delete()" class="text-red-500 ml-2">Del</button></div></div>`}).join('');});db.collection('orders').orderBy('created_at','desc').onSnapshot(s=>{oc.innerText=s.size;let total=0;s.forEach(d=>total+=d.data().total||0);sales.innerText='UGX '+total.toLocaleString();orders.innerHTML=s.docs.map(d=>{let o=d.data(),time=o.created_at?o.created_at.toDate().toLocaleString():'now';return `<div class="bg-white p-3 rounded-xl flex justify-between border-l-4 border-black"><div><b>${o.customer_name} - ${o.customer_phone}</b> • ${o.location}<br><span class="text-[11px] text-gray-500">${time}</span><br><span class="text-xs">${o.items.map(i=>i.name+' x'+i.qty).join(', ')}</span></div><div class="text-right"><b class="text-[#C6A86A]">UGX ${o.total}</b><br><select onchange="db.collection('orders').doc('${d.id}').update({status:this.value})" class="text-xs border mt-1"><option selected>${o.status}</option><option>preparing</option><option>served</option></select></div></div>`}).join('');});</script></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin - Quick Bite</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+</head><body class="bg-[#F5F1E9] p-6"><div class="max-w-5xl mx-auto">
+<h1 class="serif text-[28px] font-bold">Quick Bite Admin</h1>
+
+<div class="bg-[#0A0A0A] text-white p-6 rounded-[24px] mt-6">
+<h2 class="text-[#D4B67A] text-[12px] tracking-[3px] font-bold">HERO BANNER</h2>
+<p class="text-[11px] text-white/50 mt-2">Upload the big photo customers see at top. Recommended: 800x600 grill photo.</p>
+<input id="bannerFile" type="file" accept="image/*" class="mt-4 text-xs">
+<button onclick="uploadBanner()" id="bannerBtn" class="mt-3 bg-[#D4B67A] text-black px-6 py-2.5 rounded-full text-xs font-bold">Upload Banner</button>
+<img id="bannerPreview" class="mt-4 h-40 rounded-xl object-cover hidden w-full">
+</div>
+
+<div class="mt-6 grid md:grid-cols-3 gap-4">
+<div class="bg-white p-5 rounded-[20px]">Today Sales <b id="sales" class="block text-xl">UGX 0</b></div>
+<div class="bg-white p-5 rounded-[20px]">Orders <b id="oc" class="block text-xl">0</b></div>
+<div class="bg-white p-5 rounded-[20px]">Delivery Zones <b class="block text-[11px] mt-1">Kataza 500, Kiswa 1000, Mbuya 2000, Mutungo 2500, Luzira 3000</b></div>
+</div>
+
+<div class="mt-6 bg-white p-6 rounded-[24px] max-w-md">
+<h2 class="font-bold">Add Dish</h2>
+<input id="name" placeholder="Name e.g Grilled Chicken" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="price" type="number" placeholder="Price UGX" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="cat" placeholder="Category: Local, Grill, Drinks" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="desc" placeholder="Description / story" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 mt-3 text-sm outline-none">
+<input id="file" type="file" accept="image/*" class="mt-3 text-xs">
+<button onclick="addDish()" id="ubtn" class="w-full bg-[#0A0A0A] text-[#D4B67A] py-3.5 mt-4 rounded-full font-bold text-xs tracking-widest">ADD DISH</button>
+</div>
+
+<h2 class="mt-8 font-bold">Live Orders (with delivery fee)</h2>
+<div id="orders" class="mt-3 space-y-2"></div>
+
+<h2 class="mt-8 font-bold">Menu</h2>
+<div id="foods" class="mt-3 grid md:grid-cols-4 gap-3"></div>
+
+</div>
+<script>
+const firebaseConfig = { apiKey: "REPLACE", authDomain: "REPLACE", projectId: "REPLACE", storageBucket: "REPLACE", appId: "REPLACE" };
+firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
+
+async function uploadBanner(){
+ let file=document.getElementById('bannerFile').files[0]; if(!file) return alert('Select image');
+ bannerBtn.innerText='Uploading...';
+ let ref=firebase.storage().ref('banner/'+Date.now()+'_'+file.name);
+ await ref.put(file); let url=await ref.getDownloadURL();
+ await db.collection('config').doc('banner').set({url, updated: firebase.firestore.FieldValue.serverTimestamp()});
+ bannerBtn.innerText='Upload Banner'; alert('Banner updated! Customers will see new banner now'); loadBanner();
+}
+async function loadBanner(){
+ let doc=await db.collection('config').doc('banner').get();
+ if(doc.exists){ bannerPreview.src=doc.data().url; bannerPreview.classList.remove('hidden'); }
+}
+loadBanner();
+
+async function addDish(){
+ ubtn.innerText='Uploading...'; let file=document.getElementById('file').files[0],url='';
+ if(file){ let ref=firebase.storage().ref('foods/'+Date.now()+'_'+file.name); await ref.put(file); url=await ref.getDownloadURL(); }
+ await db.collection('products').add({name:name.value,price:+price.value,category:cat.value,description:desc.value,image_url:url,is_available:true,created_at:firebase.firestore.FieldValue.serverTimestamp()});
+ ubtn.innerText='ADD DISH'; alert('Added'); name.value='';price.value='';cat.value='';desc.value='';
+}
+
+db.collection('products').onSnapshot(s=>{
+ foods.innerHTML=s.docs.map(d=>{let f=d.data(); return `<div class="bg-white rounded-[16px] overflow-hidden"><img src="${f.image_url}" class="h-28 w-full object-cover"><div class="p-3 text-xs"><b>${f.name}</b> - UGX ${f.price}<br><button onclick="db.collection('products').doc('${d.id}').delete()" class="text-red-500 mt-1">Delete</button></div></div>`}).join('');
+});
+
+db.collection('orders').orderBy('created_at','desc').onSnapshot(s=>{
+ oc.innerText=s.size; let total=0; s.forEach(d=>total+=d.data().total||0); sales.innerText='UGX '+total.toLocaleString();
+ orders.innerHTML=s.docs.map(d=>{let o=d.data(), time=o.created_at?o.created_at.toDate().toLocaleTimeString():'now'; return `<div class="bg-white p-4 rounded-[16px] flex justify-between border-l-4 border-[#0A0A0A]"><div><b>${o.customer_name} • ${o.customer_phone}</b><br><span class="text-xs bg-[#D4B67A] px-2 py-1 rounded-full">${o.area||''} - Fee UGX ${o.delivery_fee||0}</span> <span class="text-xs">${o.location}</span><br><span class="text-[11px] text-gray-500">${time} • ${o.items.map(i=>i.name+' x'+i.qty).join(', ')}</span><br><span class="text-[11px]">Total UGX ${o.total?.toLocaleString()} (${o.note||''})</span></div><div><select onchange="db.collection('orders').doc('${d.id}').update({status:this.value})" class="text-xs border rounded-full px-2 py-1"><option>${o.status}</option><option>preparing</option><option>served</option></select></div></div>`}).join('');
+});
+</script></body></html>
