@@ -19,7 +19,6 @@
 
 <div id="cartBtn" class="hidden fixed bottom-[88px] left-1/2 -translate-x-1/2 w-[90%] max-w-[380px] bg-[#0A0A0A] rounded-full p-2 pl-5 pr-2 flex justify-between items-center shadow-xl z-30"><div class="flex items-center gap-3"><div class="w-9 h-9 bg-[#D4B67A] rounded-full flex items-center justify-center text-black font-bold text-xs" id="cartCount">0</div><div><p class="text-white text-[11px] font-bold" id="cartText">0 dishes</p><p class="text-[#D4B67A] text-[10px]" id="cartPrice">UGX 0</p></div></div><button onclick="openCart()" class="bg-white text-black px-6 py-2.5 rounded-full text-[10px] font-bold">VIEW →</button></div>
 
-<!-- CART PAGE WITH QTY CONTROLS -->
 <div id="cartPage" class="hidden fixed inset-0 bg-[#F5F1E9] z-[60] overflow-y-auto"><div class="max-w-[430px] mx-auto p-5"><div class="flex justify-between items-center"><button onclick="closeCart()" class="w-9 h-9 bg-white rounded-full font-bold">✕</button><p class="serif text-[18px] font-bold">Your Order</p><div class="w-9"></div></div><div id="cartList" class="mt-6 space-y-3"></div><div class="mt-5 bg-white rounded-[20px] p-4"><input id="cname" placeholder="Full name" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 text-[12px] outline-none"><input id="cphone" placeholder="07XX XXX XXX" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 text-[12px] outline-none mt-2"><select id="cloc" onchange="updateDelivery()" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 text-[12px] outline-none mt-2"><option value="">Select area</option><option value="Kataza">Kataza — 500</option><option value="Kiswa">Kiswa — 1,000</option><option value="Mbuya">Mbuya — 2,000</option><option value="Kinawataka">Kinawataka — 2,000</option><option value="Mutungo">Mutungo — 2,500</option><option value="Luzira">Luzira — 3,000</option><option value="Town">Town — 3,000</option></select><input id="clocDetail" placeholder="Hostel / Room" class="w-full bg-[#F5F1E9] rounded-full px-4 py-3 text-[12px] outline-none mt-2"><textarea id="note" placeholder="Note" class="w-full bg-[#F5F1E9] rounded-[16px] px-4 py-3 text-[12px] outline-none mt-2 h-16"></textarea></div><div class="mt-5 px-2 space-y-1 text-[12px]"><div class="flex justify-between text-black/50"><span>Subtotal</span><span id="sub">UGX 0</span></div><div class="flex justify-between text-black/50"><span>Delivery (<span id="areaName">Kataza</span>)</span><span id="deliveryLabel">UGX 500</span></div><div class="flex justify-between font-bold pt-2 border-t"><span>Total</span><span id="total">UGX 0</span></div></div><button onclick="placeOrder()" id="orderBtn" class="w-full mt-5 bg-[#0A0A0A] text-[#D4B67A] py-4 rounded-full font-bold tracking-[2px] text-[11px]">CONFIRM ORDER</button></div></div>
 
 </div><script>
@@ -72,5 +71,44 @@ function updateDelivery(){
  sub.innerText='UGX '+t.toLocaleString();total.innerText='UGX '+(t+currentDelivery).toLocaleString();
 }
 function removeCart(id){cart=cart.filter(c=>c.id!=id);updateBtn();updateDelivery();render();}
-async function placeOrder(){if(!cloc.value)return alert('Select area');if(!cname.value||!cphone.value)return alert('Name & phone');if(!cart.length)return alert('Cart empty');orderBtn.innerText='PLACING...';orderBtn.disabled=true;let subtotal=cart.reduce((a,b)=>a+b.price*b.qty,0);let ref=await db.collection('orders').add({customer_name:cname.value,customer_phone:cphone.value,area:cloc.value,location:cloc.value+' - '+clocDetail.value,delivery_fee:currentDelivery,subtotal,total:subtotal+currentDelivery,items:cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),note:note.value,status:'new',created_at:firebase.firestore.FieldValue.serverTimestamp()});alert('Order placed! '+ref.id.slice(0,6).toUpperCase());cart=[];updateBtn();closeCart();orderBtn.innerText='CONFIRM ORDER';orderBtn.disabled=false;location.href='track.html?id='+ref.id;}
+
+async function placeOrder(){
+ if(!cloc.value)return alert('Select area');
+ if(!cname.value||!cphone.value)return alert('Name & phone');
+ if(!cart.length)return alert('Cart empty');
+ orderBtn.innerText='PLACING...';orderBtn.disabled=true;
+ let subtotal=cart.reduce((a,b)=>a+b.price*b.qty,0);
+ try{
+  let ref=await db.collection('orders').add({
+   customer_name:cname.value,
+   customer_phone:cphone.value,
+   area:cloc.value,
+   location:cloc.value+' - '+clocDetail.value,
+   delivery_fee:currentDelivery,
+   subtotal,
+   total:subtotal+currentDelivery,
+   items:cart.map(i=>({name:i.name,price:i.price,qty:i.qty})),
+   note:note.value,
+   status:'new',
+   admin_message:'',
+   created_at:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  // --- FIX: SAVE ID BEFORE REDIRECT ---
+  const fullId = ref.id;
+  localStorage.setItem('lastOrderId', fullId);
+  sessionStorage.setItem('lastOrderId', fullId);
+  localStorage.setItem('lastOrderIdShort', fullId.slice(0,8).toUpperCase());
+  localStorage.setItem('cart', JSON.stringify([]));
+
+  alert('Order placed! '+fullId.slice(0,8).toUpperCase());
+  cart=[];updateBtn();closeCart();
+  orderBtn.innerText='CONFIRM ORDER';orderBtn.disabled=false;
+  location.href='track.html?id='+fullId;
+
+ }catch(e){
+  alert('Failed: '+e.message); console.error(e);
+  orderBtn.innerText='CONFIRM ORDER';orderBtn.disabled=false;
+ }
+}
 </script></body></html>
