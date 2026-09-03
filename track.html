@@ -16,25 +16,24 @@
 </div>
 
 <div id="orderBox" class="hidden px-5 mt-6 pb-10 space-y-4">
-<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="dcode" class="mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]"></p><p id="cust" class="text-[11px] text-black/50 mt-2"></p><p id="otime" class="text-[10px] text-black/40 mt-1"></p><p id="elapsed" class="text-[10px] font-bold text-[#D4B67A] mt-0.5"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
+<div class="bg-white rounded-[24px] p-5 flex justify-between items-center"><div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">ORDER ID</p><p id="oid" class="font-bold text-[15px] tracking-widest mt-1"></p><p id="dcode" class="mt-2 hidden inline-flex bg-[#D4B67A] text-black px-3 py-1.5 rounded-full text-[10px] font-bold tracking-[2px]"></p><p id="cust" class="text-[11px] text-black/50 mt-2"></p><p id="otime" class="text-[10px] text-black/40 mt-1"></p><p id="elapsed" class="text-[10px] font-bold text-[#D4B67A] mt-0.5"></p></div><div class="text-right"><p class="text-[9px] tracking-[2px] text-black/30 font-bold">TOTAL</p><p id="total" class="font-bold text-[16px] mt-1"></p><p id="area" class="text-[10px] text-black/40 mt-1"></p></div></div>
 <div class="bg-[#0A0A0A] rounded-[28px] p-6 text-white"><p class="text-[#D4B67A] text-[10px] tracking-[4px] font-bold">PROGRESS</p><div id="steps" class="mt-6"></div></div>
 <div class="bg-white rounded-[24px] p-5"><p class="font-bold text-[11px] tracking-widest">ITEMS</p><div id="items" class="mt-4 space-y-2"></div></div>
 
-<!-- ADDED: CUSTOMER DELIVERY VERIFICATION - ONLY SHOWS WHEN ON THE WAY -->
 <div id="verifyBox" class="hidden bg-white border-2 border-[#D4B67A] rounded-[24px] p-5">
 <p class="font-bold text-[12px] tracking-widest text-center">DELIVERY CONFIRMATION</p>
-<p class="text-[11px] text-black/50 text-center mt-1">Rider will give you code from kitchen. Enter it to confirm receipt.</p>
+<p class="text-[11px] text-black/50 text-center mt-1">Rider will tell you a 4-digit code at your door. Enter it below.</p>
 <div class="mt-4 flex gap-2">
-<input id="verifyCode" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit code" class="flex-1 bg-[#F5F1E9] rounded-full px-5 py-3.5 text-[14px] outline-none font-bold tracking-[6px] text-center">
+<input id="verifyCode" inputmode="numeric" maxlength="4" placeholder="Enter code from rider" class="flex-1 bg-[#F5F1E9] rounded-full px-5 py-3.5 text-[14px] outline-none font-bold tracking-[6px] text-center">
 </div>
 <p id="verifyErr" class="hidden text-[11px] text-red-500 text-center mt-2"></p>
 <button id="verifyBtn" onclick="verifyDelivery()" class="w-full mt-3 bg-[#0A0A0A] text-[#D4B67A] py-4 rounded-full font-bold text-[11px] tracking-widest">I RECEIVED MY PACKAGE ✓</button>
-<p class="text-[9px] text-black/30 text-center mt-2 tracking-[1px]">This will generate your receipt & mark order done in kitchen</p>
+<p class="text-[9px] text-black/30 text-center mt-2 tracking-[1px]">Only press after rider gives you code</p>
 </div>
 
 <div id="adminMsgBox" class="hidden bg-[#FFF3C4] border border-[#D4B67A]/30 rounded-[20px] p-4 flex gap-3"><div class="w-8 h-8 bg-[#0A0A0A] text-[#D4B67A] rounded-full flex items-center justify-center text-[12px]">!</div><div><p class="font-bold text-[11px]">Message from kitchen</p><p id="adminMsg" class="text-[12px] mt-1 leading-[1.4]"></p></div></div>
 <button id="cancelBtn" onclick="cancelOrder()" class="hidden w-full bg-white border border-red-200 text-red-500 py-3.5 rounded-full text-[11px] font-bold tracking-widest">CANCEL ORDER ✕</button>
-<div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call kitchen - Mr. Tum Tum</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
+<div class="bg-white rounded-[20px] p-4 flex justify-between items-center"><div><p class="font-bold text-[11px]">Need help?</p><p class="text-[10px] text-black/40">Call Mr. Tum Tum kitchen</p></div><a href="tel:+256000000000" class="bg-[#F5F1E9] px-5 py-2.5 rounded-full text-[11px] font-bold">CALL</a></div>
 </div>
 
 <div id="receiptBox" class="hidden px-5 mt-6 pb-10 space-y-4">
@@ -49,8 +48,7 @@
 <div class="flex justify-between text-black/50"><span>Delivery Fee</span><span id="rDel"></span></div>
 <div class="flex justify-between font-bold text-[14px] pt-2 border-t"><span>Total Paid</span><span id="rTotal" class="text-[#8C6B2E]"></span></div>
 </div>
-<p class="text-[9px] text-black/30 mt-4 text-center tracking-[2px]">THANK YOU FOR ORDERING FROM MR. TUM TUM</p>
-<p class="text-[8px] text-black/20 mt-1 text-center">Verified delivery • Keep this receipt</p>
+<p class="text-[9px] text-black/30 mt-4 text-center tracking-[2px]">THANK YOU FROM MR. TUM TUM</p>
 </div>
 <div class="grid grid-cols-3 gap-2">
 <button onclick="downloadReceipt()" class="bg-[#0A0A0A] text-[#D4B67A] py-3 rounded-full font-bold text-[10px] tracking-widest">DOWNLOAD ↓</button>
@@ -68,7 +66,7 @@
 </div><script>
 const firebaseConfig={apiKey:"AIzaSyBXOE8w7uZQA4YwXyqz8b8cMoNsp84n7RY",authDomain:"quickbite-kataza.firebaseapp.com",projectId:"quickbite-kataza",storageBucket:"quickbite-kataza.firebasestorage.app",messagingSenderId:"584517077834",appId:"1:584517077834:web:9465cd7f4183561e880fb3"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
 let unsub=null, lastStatus=null, currentId=null, orderCreatedAt=null, currentReceiptId=null, currentDeliveryCode=null;
-const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Mr. Tum Tum kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming with code',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy!',icon:'✓'}];
+const flow=[{k:'new',t:'Order Received',d:'We got your order',icon:'◍'}, {k:'preparing',t:'Preparing',d:'Mr. Tum Tum kitchen is cooking',icon:'◑'}, {k:'on the way',t:'On the Way',d:'Rider is coming - he has your code',icon:'◍'}, {k:'served',t:'Delivered',d:'Enjoy!',icon:'✓'}];
 const heads={new:'is confirmed',preparing:'is being cooked','on the way':'is on the way',served:'has arrived',canceled:'was canceled'};
 let audioCtx=null; function getAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
 function beep(f,d,v=0.3,dl=0){ try{ setTimeout(()=>{ let ctx=getAudio(); let o=ctx.createOscillator(); let g=ctx.createGain(); o.frequency.value=f; o.connect(g); g.connect(ctx.destination); g.gain.value=v; o.start(); setTimeout(()=>o.stop(),d); },dl);}catch(e){} }
@@ -90,21 +88,18 @@ function renderSteps(current){
  topStatus.innerText=(current||'NEW').toUpperCase(); mainHead.innerText=heads[current]||'is confirmed'; liveText.innerText=flow.find(f=>f.k===current)?.d||'Live';
 }
 function showReceipt(o,id){ currentReceiptId=id; document.getElementById('orderBox').classList.add('hidden'); document.getElementById('receiptBox').classList.remove('hidden'); document.getElementById('topStatus').innerText='DELIVERED'; document.getElementById('mainHead').innerText='receipt ready'; document.getElementById('liveDot').className='w-3 h-3 bg-green-500 rounded-full'; document.getElementById('liveText').innerText='Enjoy - Mr. Tum Tum'; document.getElementById('receiptTime').innerText='Delivered on '+new Date().toLocaleString()+' • '+(o.customer_name||''); document.getElementById('rCode').innerText='✓ CODE VERIFIED '+(o.delivery_code||''); document.getElementById('rId').innerText='#'+id.slice(0,8).toUpperCase(); document.getElementById('receiptItems').innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between text-[12px]"><span>${i.name} <span class="text-black/40">x${i.qty}</span></span><span class="font-bold">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join(''); document.getElementById('rSub').innerText='UGX '+((o.total||0)-(o.delivery_fee||0)).toLocaleString(); document.getElementById('rDel').innerText='UGX '+(o.delivery_fee||0).toLocaleString(); document.getElementById('rTotal').innerText='UGX '+(o.total||0).toLocaleString(); saveToHistory(o,id); }
-
-// NEW LOGIC: CUSTOMER VERIFIES CODE FROM RIDER
 async function verifyDelivery(){
   let input=document.getElementById('verifyCode').value.trim();
   let err=document.getElementById('verifyErr');
   if(!input){ err.innerText='Enter code rider gave you'; err.classList.remove('hidden'); return; }
   if(String(input)!==String(currentDeliveryCode)){
-    err.innerText='Wrong code. Correct code is: '+currentDeliveryCode+' - ask rider';
+    err.innerText='Wrong code. Ask rider again.';
     err.classList.remove('hidden');
     return;
   }
   err.classList.add('hidden');
   document.getElementById('verifyBtn').innerText='VERIFYING...';
   try{
-    // This marks order as done in admin + triggers money calculation because admin counts served orders
     await db.collection('orders').doc(currentId).update({
       status:'served',
       served_at: firebase.firestore.FieldValue.serverTimestamp(),
@@ -112,14 +107,12 @@ async function verifyDelivery(){
       received_at: firebase.firestore.FieldValue.serverTimestamp(),
       customer_verified_code: input
     });
-    // receipt will show automatically via onSnapshot
   }catch(e){
     err.innerText=e.message;
     err.classList.remove('hidden');
     document.getElementById('verifyBtn').innerText='I RECEIVED MY PACKAGE ✓';
   }
 }
-
 function listen(id){
  if(unsub) unsub(); id=id.trim(); currentId=id;
  document.getElementById('orderIdInput').value=id.slice(0,8).toUpperCase(); localStorage.setItem('lastOrderId', id); sessionStorage.setItem('lastOrderId', id);
@@ -133,10 +126,13 @@ function listen(id){
   cust.innerText=(o.customer_name||'')+' • '+(o.customer_phone||''); area.innerText=(o.area||'')+' • '+(o.location||''); total.innerText='UGX '+(o.total||0).toLocaleString();
   items.innerHTML=(o.items||[]).map(i=>`<div class="flex justify-between items-center bg-[#F5F1E9] rounded-full px-4 py-2.5"><span class="text-[11px] font-bold">${i.name} x ${i.qty}</span><span class="text-[11px]">UGX ${(i.price*i.qty).toLocaleString()}</span></div>`).join('');
   if(o.admin_message){ adminMsgBox.classList.remove('hidden'); adminMsg.innerText=o.admin_message; } else adminMsgBox.classList.add('hidden');
-  let dc = document.getElementById('dcode');
-  if(o.delivery_code){
-    if(o.status==='on the way'){ dc.className='mt-2 inline-flex bg-[#D4B67A] text-black px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]'; dc.innerText='CODE: '+o.delivery_code+' • Rider will ask'; }
-    else { dc.className='mt-2 inline-flex bg-[#0A0A0A] text-[#D4B67A] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[3px]'; dc.innerText='CODE: '+o.delivery_code; }
+  // CODE NEVER SHOWN TO CUSTOMER - RIDER TELLS THEM VERBALLY
+  let dc=document.getElementById('dcode');
+  if(o.status==='on the way'){
+    dc.classList.remove('hidden');
+    dc.innerText='RIDER HAS YOUR CODE • Ask him at delivery';
+  } else {
+    dc.classList.add('hidden');
   }
   if(orderCreatedAt){ otime.innerText='Ordered at '+orderCreatedAt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' • '+orderCreatedAt.toLocaleDateString(); let mins=Math.floor((new Date()-orderCreatedAt)/60000); elapsed.innerText=mins<1?'Just now': mins<60? mins+' min ago': Math.floor(mins/60)+'h '+(mins%60)+'m ago'; }
   if(lastStatus && lastStatus!==o.status) playStatusSound(o.status);
