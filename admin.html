@@ -1,16 +1,18 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin REAL Fixed</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#F5F1E9] p-4"><div class="max-w-7xl mx-auto">
-<h1 class="text-2xl font-bold">Quick Bite Admin REAL</h1>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mr. Tum Tum Admin</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script></head><body class="bg-[#F5F1E9] p-4"><div class="max-w-7xl mx-auto">
+<h1 class="text-2xl font-bold">Mr. Tum Tum Admin</h1>
+<p class="text-[10px] text-black/40 tracking-widest">KITCHEN CODE → RIDER → CUSTOMER ENTERS CODE → RECEIPT → MONEY COUNTS</p>
 
 <!-- DAILY MONEY SUMMARY WITH CATEGORIES -->
 <div class="bg-[#0A0A0A] text-white rounded-[24px] p-5 mt-4">
 <div class="flex flex-wrap justify-between items-center gap-3">
 <div>
-<h2 class="text-[#D4B67A] text-[11px] tracking-[3px] font-bold">DAILY COLLECTION - BY CATEGORY</h2>
+<h2 class="text-[#D4B67A] text-[11px] tracking-[3px] font-bold">DAILY COLLECTION - BY CATEGORY (ONLY SERVED)</h2>
 <div class="flex items-center gap-2 mt-3">
 <input id="datePick" type="date" class="bg-white/10 text-white rounded-full px-4 py-2 text-xs outline-none">
 <button onclick="calcForDate()" class="bg-[#D4B67A] text-black px-4 py-2 rounded-full text-[11px] font-bold">CHECK</button>
 <button onclick="setToday()" class="bg-white/10 text-white/60 px-3 py-2 rounded-full text-[11px]">Today</button>
 </div>
+<p class="text-[9px] text-white/30 mt-2">Money adds only after customer enters code from rider (status=served)</p>
 </div>
 <div class="flex gap-2">
 <button onclick="deleteAllCompleted()" class="bg-red-500/20 border border-red-500/30 text-red-400 px-3 py-2 rounded-full text-[10px] font-bold">DEL COMPLETED</button>
@@ -30,7 +32,7 @@
 <div class="grid grid-cols-3 gap-3 mt-3">
 <div class="bg-white text-black rounded-xl p-3"><p class="text-[9px] text-black/40 tracking-widest">DISHES TOTAL</p><p id="sumDishes" class="font-bold text-[16px] mt-1">UGX 0</p></div>
 <div class="bg-white text-black rounded-xl p-3"><p class="text-[9px] text-black/40 tracking-widest">ALL COLLECTED</p><p id="sumTotal" class="font-bold text-[16px] mt-1">UGX 0</p><p id="sumCount" class="text-[10px] text-black/40">0 orders</p></div>
-<div class="bg-[#D4B67A] text-black rounded-xl p-3"><p class="text-[9px] tracking-widest font-bold">MAJOR TOTAL (Dishes + Delivery)</p><p id="majorTotal" class="font-bold text-[18px] mt-1">UGX 0</p><p class="text-[9px] mt-1">Profit for day</p></div>
+<div class="bg-[#D4B67A] text-black rounded-xl p-3"><p class="text-[9px] tracking-widest font-bold">MAJOR TOTAL (Dishes + Delivery)</p><p id="majorTotal" class="font-bold text-[18px] mt-1">UGX 0</p><p class="text-[9px] mt-1">Profit for day - served only</p></div>
 </div>
 </div>
 
@@ -49,12 +51,13 @@
 <div class="mt-5"><p class="font-bold text-[11px]">YOUR MENU (<span id="foodCount">0</span>)</p><div id="foods" class="mt-3 grid grid-cols-2 gap-2"></div></div>
 </div>
 </div>
-<div class="bg-white rounded-[24px] p-5"><h2 class="font-bold">Orders - <span id="liveCount" class="text-[#D4B67A]">LIVE</span></h2>
+<div class="bg-white rounded-[24px] p-5"><h2 class="font-bold">Orders - <span id="liveCount" class="text-[#D4B67A]">LIVE</span> - Mr. Tum Tum</h2>
 
-<!-- ADDED: VERIFY BOX - ONLY VISIBLE WHEN ON THE WAY ORDERS EXIST -->
+<!-- VERIFY BOX - BACKUP -->
 <div id="verifyBox" class="hidden mt-4 bg-black rounded-[16px] p-4 border border-[#D4B67A]/20">
-  <p class="text-[#D4B67A] text-[9px] tracking-[3px] font-bold">VERIFY DELIVERY CODE (ON THE WAY)</p>
-  <div class="flex gap-2 mt-2">
+  <p class="text-[#D4B67A] text-[9px] tracking-[3px] font-bold">BACKUP VERIFY (CUSTOMER USUALLY VERIFIES)</p>
+  <p class="text-white/40 text-[9px] mt-1">Kitchen gives code to rider → rider gives to customer → customer enters in track page. Use this only if customer has no data.</p>
+  <div class="flex gap-2 mt-3">
     <input id="adminCode" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit code" class="flex-1 bg-white/10 text-[#D4B67A] text-[16px] font-bold tracking-[6px] px-4 py-3 rounded-full outline-none placeholder:text-white/20">
     <button onclick="adminVerifyCode()" id="adminVerifyBtn" class="bg-[#D4B67A] text-black px-6 rounded-full font-bold text-[11px]">VERIFY ✓</button>
   </div>
@@ -95,11 +98,9 @@ function calcForDate(silent=false){
    let dt=d.toDate?d.toDate():new Date(d);
    return dt.toISOString().slice(0,10)===pick;
  });
-
  let totals={Rolex:0,Fries:0,Juice:0,Soda:0,Other:0};
  let qty={Rolex:0,Fries:0,Juice:0,Soda:0,Other:0};
  let delivery=0, dishesTotal=0, grand=0;
-
  dayOrders.forEach(o=>{
    let del=o.delivery_fee||o.deliveryFee||o.delivery||0;
    delivery+=del;
@@ -113,10 +114,8 @@ function calcForDate(silent=false){
    });
    grand+= (o.total||0);
  });
-
  if(dishesTotal===0 && dayOrders.length){ dishesTotal=grand-delivery; totals.Other=dishesTotal; }
  if(grand===0) grand=dishesTotal+delivery;
-
  document.getElementById('catRolex').innerText='UGX '+totals.Rolex.toLocaleString();
  document.getElementById('catFries').innerText='UGX '+totals.Fries.toLocaleString();
  document.getElementById('catJuice').innerText='UGX '+totals.Juice.toLocaleString();
@@ -127,7 +126,6 @@ function calcForDate(silent=false){
  document.getElementById('catJuiceQty').innerText=qty.Juice+' items';
  document.getElementById('catSodaQty').innerText=qty.Soda+' items';
  document.getElementById('catOtherQty').innerText=qty.Other+' items';
-
  document.getElementById('sumDelivery').innerText='UGX '+delivery.toLocaleString();
  document.getElementById('deliveryCount').innerText=dayOrders.length+' deliveries';
  document.getElementById('sumDishes').innerText='UGX '+dishesTotal.toLocaleString();
@@ -140,24 +138,21 @@ async function deleteOrder(id){ if(!confirm('Delete permanently?')) return; awai
 async function deleteAllCompleted(){ if(!confirm('DELETE ALL COMPLETED?')) return; let list=allOrders.filter(o=>o.status==='served'); if(!list.length) return alert('No completed'); if(!confirm('Delete '+list.length+'?')) return; for(let o of list) await db.collection('orders').doc(o.id).delete(); }
 async function deleteAllCanceled(){ if(!confirm('DELETE ALL CANCELED?')) return; let list=allOrders.filter(o=>o.status==='canceled'); if(!list.length) return alert('No canceled'); if(!confirm('Delete '+list.length+'?')) return; for(let o of list) await db.collection('orders').doc(o.id).delete(); }
 
-// --- ADDED: VERIFY CODE LOGIC ---
 async function adminVerifyCode(){
   let code = document.getElementById('adminCode').value.trim();
   if(code.length<4){ alert('Enter 4 digit code'); return; }
   let btn = document.getElementById('adminVerifyBtn');
   btn.innerText='CHECKING...'; btn.disabled=true;
-  document.getElementById('verifyResult').innerHTML='<p class="text-[10px] text-white/30">Searching...</p>';
+  document.getElementById('verifyResult').innerHTML='<p class="text-[10px] text-white/30">Searching on the way orders...</p>';
   try{
-    // Only allow verifying if order is ON THE WAY
     let snap = await db.collection('orders').where('delivery_code','==',code).where('status','==','on the way').limit(1).get();
     if(snap.empty){
-      // check if exists but not on the way
       let snap2 = await db.collection('orders').where('delivery_code','==',code).limit(1).get();
       if(snap2.empty){
         document.getElementById('verifyResult').innerHTML=`<div class="bg-red-500/20 border border-red-500/30 p-2 rounded-xl text-[11px] text-red-300">❌ Code ${code} not found</div>`;
       }else{
         let o=snap2.docs[0].data();
-        document.getElementById('verifyResult').innerHTML=`<div class="bg-yellow-500/20 border border-yellow-500/30 p-2 rounded-xl text-[11px] text-yellow-200">⚠️ Code found but status is <b>${o.status}</b>. Must be On The Way.</div>`;
+        document.getElementById('verifyResult').innerHTML=`<div class="bg-yellow-500/20 border border-yellow-500/30 p-2 rounded-xl text-[11px] text-yellow-200">⚠️ Found but status is <b>${o.status}</b>. Must be On The Way. Customer already verified?</div>`;
       }
       btn.innerText='VERIFY ✓'; btn.disabled=false; return;
     }
@@ -166,7 +161,8 @@ async function adminVerifyCode(){
       <div class="bg-white text-black p-3 rounded-xl mt-2">
         <p class="font-bold text-[12px]">${o.customer_name} • ${o.customer_phone}</p>
         <p class="text-[10px] text-black/50">${o.location} | UGX ${Number(o.total).toLocaleString()} | Code ${code}</p>
-        <button onclick="confirmAdminDelivery('${doc.id}')" class="w-full mt-3 bg-green-600 text-white py-2.5 rounded-full font-bold text-[11px]">CONFIRM AS DONE ✓</button>
+        <p class="text-[9px] text-black/30 mt-1">Kitchen gave this code to rider → rider gives to customer. Confirm if customer has no data.</p>
+        <button onclick="confirmAdminDelivery('${doc.id}')" class="w-full mt-3 bg-green-600 text-white py-2.5 rounded-full font-bold text-[11px]">CONFIRM AS DONE ✓ (BACKUP)</button>
       </div>`;
   }catch(e){
     document.getElementById('verifyResult').innerHTML=`<p class="text-red-400 text-[11px]">${e.message}</p>`;
@@ -174,9 +170,9 @@ async function adminVerifyCode(){
   btn.innerText='VERIFY ✓'; btn.disabled=false;
 }
 async function confirmAdminDelivery(id){
-  if(!confirm('Mark this order as DONE / Served?')) return;
+  if(!confirm('Mark as DONE? This will add money to daily total and show receipt to customer.')) return;
   await db.collection('orders').doc(id).update({status:'served', served_at: firebase.firestore.FieldValue.serverTimestamp(), verified_by_admin:true});
-  document.getElementById('verifyResult').innerHTML=`<div class="bg-green-500/20 border border-green-500/30 p-3 rounded-xl text-center"><p class="text-green-300 font-bold text-[12px]">✅ Marked as DONE</p><p class="text-[10px] text-white/40 mt-1">Customer now sees Delivered screen</p></div>`;
+  document.getElementById('verifyResult').innerHTML=`<div class="bg-green-500/20 border border-green-500/30 p-3 rounded-xl text-center"><p class="text-green-300 font-bold text-[12px]">✅ Marked as DONE</p><p class="text-[10px] text-white/40 mt-1">Money added to daily total</p></div>`;
   document.getElementById('adminCode').value='';
   setTimeout(()=>{ document.getElementById('verifyResult').innerHTML=''; }, 4000);
 }
@@ -184,7 +180,6 @@ async function confirmAdminDelivery(id){
 function renderOrders(){
  let list=allOrders; let cLive=allOrders.filter(o=>['new','preparing','on the way'].includes(o.status)).length; let cDone=allOrders.filter(o=>o.status==='served').length; let cCancel=allOrders.filter(o=>o.status==='canceled').length;
  document.getElementById('cLive').innerText=cLive; document.getElementById('cDone').innerText=cDone; document.getElementById('cCancel').innerText=cCancel; document.getElementById('liveCount').innerText=cLive+' LIVE';
- // ADDED: show verify box only if there is on the way
  let onWayCount = allOrders.filter(o=>o.status==='on the way').length;
  document.getElementById('verifyBox').classList.toggle('hidden', onWayCount===0);
  if(filter==='live') list=list.filter(o=>['new','preparing','on the way'].includes(o.status)); else if(filter!=='all') list=list.filter(o=>o.status===filter);
@@ -193,18 +188,18 @@ function renderOrders(){
    let tStr=timeAgo(o.created_at); let del=o.delivery_fee||0; let dishMoney=(o.total||0)-del;
    let catLine=(o.items||[]).map(i=>`${i.name} (${i.category||'Other'}) x${i.qty}`).join(', ');
    let badge=o.status==='canceled'?(o.canceled_by==='customer'?`<span class="bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded-full text-[9px] font-bold">⚠ BY CUSTOMER</span>`:`<span class="bg-gray-100 px-2 py-1 rounded-full text-[9px]">By Admin</span>`):'';
-   // ADDED: show code per order if on the way
-   let codeBadge = o.delivery_code? `<span class="bg-black text-[#D4B67A] px-2 py-1 rounded-full text-[9px] font-bold tracking-widest">CODE ${o.delivery_code}</span>` : '';
+   let codeBadge = o.delivery_code? `<span class="bg-black text-[#D4B67A] px-2 py-1 rounded-full text-[9px] font-bold tracking-widest">CODE ${o.delivery_code} → GIVE TO RIDER</span>` : '';
+   let verifiedBadge = o.received_by_customer? `<span class="bg-green-600 text-white px-2 py-1 rounded-full text-[9px] font-bold">✓ CUSTOMER VERIFIED</span>` : o.verified_by_admin? `<span class="bg-blue-600 text-white px-2 py-1 rounded-full text-[9px] font-bold">✓ ADMIN VERIFIED</span>` : '';
    return `<div class="bg-[#F5F1E9] p-3 rounded-xl border-l-4 ${o.status==='new'?'border-red-500':o.status==='canceled'?'border-red-400 bg-red-50':o.status==='served'?'border-green-500 bg-green-50/50':'border-yellow-500'}">
-<div class="flex justify-between"><b class="text-xs">${o.customer_name||''} ${o.customer_phone||''}</b><div class="flex gap-1"><span class="text-[10px] bg-white px-2 py-1 rounded-full font-bold uppercase">${o.status}</span>${badge} ${o.status==='on the way'?codeBadge:''}</div></div>
+<div class="flex justify-between"><b class="text-xs">${o.customer_name||''} ${o.customer_phone||''}</b><div class="flex gap-1 flex-wrap justify-end"><span class="text-[10px] bg-white px-2 py-1 rounded-full font-bold uppercase">${o.status}</span>${verifiedBadge}${badge} ${o.status!=='served'&&o.status!=='canceled'?codeBadge:''}</div></div>
 <p class="text-[11px] text-black/60 mt-1">🕒 ${tStr}</p>
 <p class="text-[10px] mt-1 text-black/50">${catLine}</p>
 <p class="text-xs font-bold mt-1">UGX ${(o.total||0).toLocaleString()} <span class="font-normal text-[9px]">(Dish ${dishMoney.toLocaleString()} + Del ${del.toLocaleString()})</span></p>
 <div class="flex gap-2 mt-2 flex-wrap">
 ${o.status!=='canceled'&&o.status!=='served'?`
 <button onclick="db.collection('orders').doc('${o.id}').update({status:'preparing'})" class="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px]">Preparing</button>
-<button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way'})" class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px]">On Way</button>
-<button onclick="db.collection('orders').doc('${o.id}').update({status:'served', served_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px]">Done</button>
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way'})" class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px]">On Way + Show Code</button>
+<button onclick="db.collection('orders').doc('${o.id}').update({status:'served', served_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px]">Done (Backup)</button>
 <button onclick="db.collection('orders').doc('${o.id}').update({status:'canceled', canceled_by:'admin', canceled_at: firebase.firestore.FieldValue.serverTimestamp()})" class="bg-black text-white px-3 py-1 rounded-full text-[10px]">Cancel</button>
 `:`<button onclick="deleteOrder('${o.id}')" class="bg-white border border-red-200 text-red-500 px-3 py-1 rounded-full text-[10px]">Delete 🗑️</button>`}
 </div></div>`}).join('');
