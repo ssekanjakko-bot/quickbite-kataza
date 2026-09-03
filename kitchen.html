@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kitchen - Quick Bite Kataza</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kitchen - Mr. Tum Tum</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
@@ -10,8 +10,8 @@
 <div class="bg-[#0A0A0A] text-white p-5 sticky top-0 z-20">
 <div class="max-w-6xl mx-auto flex justify-between items-center">
 <div>
-<h1 class="serif text-[28px] font-bold leading-none">Kitchen <span class="text-[#D4B67A]">Display</span></h1>
-<p class="text-[10px] tracking-[3px] text-white/40 mt-1">LIVE ORDERS • <span id="liveCount">0</span> ACTIVE</p>
+<h1 class="serif text-[28px] font-bold leading-none">Mr. Tum Tum <span class="text-[#D4B67A]">Kitchen</span></h1>
+<p class="text-[10px] tracking-[3px] text-white/40 mt-1">LIVE ORDERS • <span id="liveCount">0</span> ACTIVE • CODE → RIDER → CUSTOMER</p>
 </div>
 <div class="flex items-center gap-3">
 <div class="bg-white/10 px-4 py-2 rounded-full text-[11px]"><span id="clock">--:--</span></div>
@@ -59,7 +59,8 @@ db.collection('orders').orderBy('created_at','desc').limit(100).onSnapshot(s=>{
    }
  });
  prevMap=new Map(s.docs.map(d=>[d.id,d.data()]));
- allOrders=s.docs.map(d=>({id:d.id,...d.data()})).filter(o=>['new','preparing'].includes(o.status));
+ // KITCHEN SEES new, preparing, on the way (so they can give code to rider)
+ allOrders=s.docs.map(d=>({id:d.id,...d.data()})).filter(o=>['new','preparing','on the way'].includes(o.status));
  document.getElementById('liveCount').innerText=allOrders.length;
  renderOrders();
 });
@@ -73,22 +74,34 @@ function getElapsed(ts){
 }
 
 function renderOrders(){
- if(!allOrders.length){ orders.innerHTML='<p class="col-span-3 text-center py-20 text-black/30">No active kitchen orders. Waiting...</p>'; return; }
+ if(!allOrders.length){ orders.innerHTML='<p class="col-span-3 text-center py-20 text-black/30">No active kitchen orders. Waiting for Mr. Tum Tum orders...</p>'; return; }
  orders.innerHTML=allOrders.map(o=>{
    let el=getElapsed(o.created_at);
    let lateClass = el.mins>25? 'late' : el.mins>15? 'bg-orange-500 text-white' : 'bg-white';
    let itemsHtml=(o.items||[]).map(i=>`<div class="flex justify-between bg-white px-3 py-2 rounded-full text-[12px]"><span class="font-bold">${i.qty}x ${i.name}</span><span class="text-black/40 text-[10px]">${i.category||'Other'}</span></div>`).join('');
+   // CODE BADGE FOR KITCHEN -> RIDER
+   let codeBox = o.delivery_code? `
+     <div class="mt-3 bg-black text-[#D4B67A] rounded-[16px] p-3 flex justify-between items-center border-2 border-[#D4B67A]">
+       <div>
+         <p class="text-[8px] tracking-[2px] text-white/40 font-bold">DELIVERY CODE</p>
+         <p class="font-bold text-[22px] tracking-[4px]">${o.delivery_code}</p>
+         <p class="text-[9px] text-white/50">GIVE THIS TO RIDER → RIDER TELLS CUSTOMER</p>
+       </div>
+       <div class="text-[28px]">🏍️</div>
+     </div>` : '';
    return `<div class="bg-white rounded-[24px] p-4 shadow-sm border-2 ${el.mins>25?'border-red-500':el.mins>15?'border-orange-300':'border-transparent'}">
 <div class="flex justify-between items-start">
-<div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">${o.id.slice(0,8).toUpperCase()} • ${o.area||''}</p><p class="font-bold text-[16px] mt-1">${o.customer_name||'Customer'}</p><p class="text-[11px] text-black/50">${o.customer_phone||''}</p></div>
+<div><p class="text-[9px] tracking-[2px] text-black/30 font-bold">${o.id.slice(0,8).toUpperCase()} • ${o.area||''} • ${o.status.toUpperCase()}</p><p class="font-bold text-[16px] mt-1">${o.customer_name||'Customer'}</p><p class="text-[11px] text-black/50">${o.customer_phone||''}</p></div>
 <div class="${lateClass} px-3 py-1.5 rounded-full text-[11px] font-bold">${el.txt}</div>
 </div>
-<p class="text-[10px] text-black/40 mt-2">Ordered at ${o.created_at?.toDate? o.created_at.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</p>
+<p class="text-[10px] text-black/40 mt-2">Ordered at ${o.created_at?.toDate? o.created_at.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''} • UGX ${(o.total||0).toLocaleString()}</p>
+${codeBox}
 <div class="mt-3 space-y-2">${itemsHtml}</div>
 <p class="text-[11px] mt-3 text-black/50">${o.location||''}</p>
 <div class="flex gap-2 mt-4">
 ${o.status==='new'?`<button onclick="db.collection('orders').doc('${o.id}').update({status:'preparing'})" class="flex-1 bg-[#0A0A0A] text-[#D4B67A] py-3 rounded-full text-[11px] font-bold">START COOKING → PREPARING</button>`:
-`<button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way', prepared_at: firebase.firestore.FieldValue.serverTimestamp()})" class="flex-1 bg-blue-600 text-white py-3 rounded-full text-[11px] font-bold">DONE → ON THE WAY</button>`}
+o.status==='preparing'? `<button onclick="db.collection('orders').doc('${o.id}').update({status:'on the way', prepared_at: firebase.firestore.FieldValue.serverTimestamp()})" class="flex-1 bg-blue-600 text-white py-3 rounded-full text-[11px] font-bold">DONE → ON THE WAY (Give Code ${o.delivery_code||''} to Rider)</button>`:
+`<div class="flex-1 bg-green-50 border border-green-200 text-green-700 py-3 rounded-full text-[11px] font-bold text-center">ON THE WAY - Rider has CODE ${o.delivery_code} - Waiting customer verification</div>`}
 </div>
 ${o.admin_message?`<p class="mt-2 bg-yellow-50 border border-yellow-200 p-2 rounded-xl text-[11px]">Msg: ${o.admin_message}</p>`:''}
 </div>`;
